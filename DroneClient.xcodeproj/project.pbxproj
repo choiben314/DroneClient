@@ -16,6 +16,7 @@
 		DA7363C425E73C3A00057830 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA7363C325E73C3A00057830 /* Assets.xcassets */; };
 		DA7363C725E73C3A00057830 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA7363C525E73C3A00057830 /* LaunchScreen.storyboard */; };
 		DA7363CA25E73C3A00057830 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7363C925E73C3A00057830 /* main.m */; };
+		DA77B7EB25E7491600F2AC99 /* DJICameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA77B7EA25E7491600F2AC99 /* DJICameraViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,8 @@
 		DA7363C625E73C3A00057830 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DA7363C825E73C3A00057830 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DA7363C925E73C3A00057830 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		DA77B7E925E7491600F2AC99 /* DJICameraViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DJICameraViewController.h; sourceTree = "<group>"; };
+		DA77B7EA25E7491600F2AC99 /* DJICameraViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DJICameraViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +89,8 @@
 				DA7363B825E73C3700057830 /* AppDelegate.m */,
 				DA7363BA25E73C3700057830 /* SceneDelegate.h */,
 				DA7363BB25E73C3700057830 /* SceneDelegate.m */,
+				DA77B7E925E7491600F2AC99 /* DJICameraViewController.h */,
+				DA77B7EA25E7491600F2AC99 /* DJICameraViewController.m */,
 				DA7363BD25E73C3700057830 /* ViewController.h */,
 				DA7363BE25E73C3700057830 /* ViewController.m */,
 				DA7363C025E73C3700057830 /* Main.storyboard */,
@@ -223,6 +228,7 @@
 				DA7363B925E73C3700057830 /* AppDelegate.m in Sources */,
 				DA7363CA25E73C3A00057830 /* main.m in Sources */,
 				DA7363BC25E73C3700057830 /* SceneDelegate.m in Sources */,
+				DA77B7EB25E7491600F2AC99 /* DJICameraViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
