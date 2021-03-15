@@ -8,37 +8,40 @@
 
 /* Begin PBXBuildFile section */
 		668F264CFEEBA46D6D17C8AB /* libPods-DroneClient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1397D6D4FE61BD0B1B9A06B5 /* libPods-DroneClient.a */; };
-		DA1CD04D25E73D9600DF3D45 /* TCPViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA1CD04825E73D9500DF3D45 /* TCPViewController.m */; };
+		DA1CD04D25E73D9600DF3D45 /* ConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA1CD04825E73D9500DF3D45 /* ConfigViewController.m */; };
+		DA4B102125FED16700C986CD /* CameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4B102025FED16700C986CD /* CameraController.m */; };
+		DA4B102B25FF077500C986CD /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4B102A25FF077500C986CD /* Constants.m */; };
 		DA7363B925E73C3700057830 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7363B825E73C3700057830 /* AppDelegate.m */; };
 		DA7363BC25E73C3700057830 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7363BB25E73C3700057830 /* SceneDelegate.m */; };
-		DA7363BF25E73C3700057830 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7363BE25E73C3700057830 /* ViewController.m */; };
 		DA7363C225E73C3700057830 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA7363C025E73C3700057830 /* Main.storyboard */; };
 		DA7363C425E73C3A00057830 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA7363C325E73C3A00057830 /* Assets.xcassets */; };
 		DA7363C725E73C3A00057830 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA7363C525E73C3A00057830 /* LaunchScreen.storyboard */; };
 		DA7363CA25E73C3A00057830 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7363C925E73C3A00057830 /* main.m */; };
-		DA77B7EB25E7491600F2AC99 /* DJICameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA77B7EA25E7491600F2AC99 /* DJICameraViewController.m */; };
+		DA77B7EB25E7491600F2AC99 /* LiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA77B7EA25E7491600F2AC99 /* LiveViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1397D6D4FE61BD0B1B9A06B5 /* libPods-DroneClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DroneClient.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		431D366987ECAD7A75FE2059 /* Pods-DroneClient.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DroneClient.release.xcconfig"; path = "Target Support Files/Pods-DroneClient/Pods-DroneClient.release.xcconfig"; sourceTree = "<group>"; };
 		721395ADF1AB4876BF61DD4A /* Pods-DroneClient.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DroneClient.debug.xcconfig"; path = "Target Support Files/Pods-DroneClient/Pods-DroneClient.debug.xcconfig"; sourceTree = "<group>"; };
-		DA1CD04825E73D9500DF3D45 /* TCPViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCPViewController.m; sourceTree = "<group>"; };
-		DA1CD04925E73D9500DF3D45 /* TCPViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPViewController.h; sourceTree = "<group>"; };
+		DA1CD04825E73D9500DF3D45 /* ConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigViewController.m; sourceTree = "<group>"; };
+		DA1CD04925E73D9500DF3D45 /* ConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigViewController.h; sourceTree = "<group>"; };
+		DA4B102025FED16700C986CD /* CameraController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CameraController.m; sourceTree = "<group>"; };
+		DA4B102325FED19600C986CD /* CameraController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CameraController.h; sourceTree = "<group>"; };
+		DA4B102925FF073400C986CD /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		DA4B102A25FF077500C986CD /* Constants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
 		DA7363B425E73C3700057830 /* DroneClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DroneClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA7363B725E73C3700057830 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		DA7363B825E73C3700057830 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		DA7363BA25E73C3700057830 /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
 		DA7363BB25E73C3700057830 /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
-		DA7363BD25E73C3700057830 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		DA7363BE25E73C3700057830 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		DA7363C125E73C3700057830 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		DA7363C325E73C3A00057830 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DA7363C625E73C3A00057830 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DA7363C825E73C3A00057830 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DA7363C925E73C3A00057830 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		DA77B7E925E7491600F2AC99 /* DJICameraViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DJICameraViewController.h; sourceTree = "<group>"; };
-		DA77B7EA25E7491600F2AC99 /* DJICameraViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DJICameraViewController.m; sourceTree = "<group>"; };
+		DA77B7E925E7491600F2AC99 /* LiveViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LiveViewController.h; sourceTree = "<group>"; };
+		DA77B7EA25E7491600F2AC99 /* LiveViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LiveViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,16 +86,18 @@
 		DA7363B625E73C3700057830 /* DroneClient */ = {
 			isa = PBXGroup;
 			children = (
-				DA1CD04925E73D9500DF3D45 /* TCPViewController.h */,
-				DA1CD04825E73D9500DF3D45 /* TCPViewController.m */,
+				DA1CD04925E73D9500DF3D45 /* ConfigViewController.h */,
+				DA1CD04825E73D9500DF3D45 /* ConfigViewController.m */,
+				DA4B102925FF073400C986CD /* Constants.h */,
+				DA4B102A25FF077500C986CD /* Constants.m */,
 				DA7363B725E73C3700057830 /* AppDelegate.h */,
 				DA7363B825E73C3700057830 /* AppDelegate.m */,
 				DA7363BA25E73C3700057830 /* SceneDelegate.h */,
 				DA7363BB25E73C3700057830 /* SceneDelegate.m */,
-				DA77B7E925E7491600F2AC99 /* DJICameraViewController.h */,
-				DA77B7EA25E7491600F2AC99 /* DJICameraViewController.m */,
-				DA7363BD25E73C3700057830 /* ViewController.h */,
-				DA7363BE25E73C3700057830 /* ViewController.m */,
+				DA4B102025FED16700C986CD /* CameraController.m */,
+				DA4B102325FED19600C986CD /* CameraController.h */,
+				DA77B7E925E7491600F2AC99 /* LiveViewController.h */,
+				DA77B7EA25E7491600F2AC99 /* LiveViewController.m */,
 				DA7363C025E73C3700057830 /* Main.storyboard */,
 				DA7363C325E73C3A00057830 /* Assets.xcassets */,
 				DA7363C525E73C3A00057830 /* LaunchScreen.storyboard */,
@@ -223,12 +228,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DA7363BF25E73C3700057830 /* ViewController.m in Sources */,
-				DA1CD04D25E73D9600DF3D45 /* TCPViewController.m in Sources */,
+				DA1CD04D25E73D9600DF3D45 /* ConfigViewController.m in Sources */,
 				DA7363B925E73C3700057830 /* AppDelegate.m in Sources */,
 				DA7363CA25E73C3A00057830 /* main.m in Sources */,
 				DA7363BC25E73C3700057830 /* SceneDelegate.m in Sources */,
-				DA77B7EB25E7491600F2AC99 /* DJICameraViewController.m in Sources */,
+				DA4B102125FED16700C986CD /* CameraController.m in Sources */,
+				DA4B102B25FF077500C986CD /* Constants.m in Sources */,
+				DA77B7EB25E7491600F2AC99 /* LiveViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

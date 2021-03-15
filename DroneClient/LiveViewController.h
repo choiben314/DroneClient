@@ -1,5 +1,5 @@
 //
-//  DJICameraViewController.h
+//  LiveViewController.h
 //  DroneClient
 //
 //  Created by Ben Choi on 2/24/21.
@@ -15,14 +15,27 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface DJICameraViewController : UIViewController
+@interface LiveViewController : UIViewController
+{
+    @public NSString *ipAddress;
+    @public NSString *port;
+    
+    CFReadStreamRef readStream;
+    CFWriteStreamRef writeStream;
 
+    NSInputStream   *inputStream;
+    NSOutputStream  *outputStream;
+
+    NSMutableArray  *messages;
+}
 @property (nonatomic, strong) DJICamera* camera;
 @property (weak, nonatomic) IBOutlet UIView *fpvPreviewView;
-@property (weak, nonatomic) IBOutlet UILabel *videoConnectionStatus;
+@property (weak, nonatomic) IBOutlet UILabel *serverConnectionStatusLabel;
+@property (weak, nonatomic) IBOutlet UILabel *uavConnectionStatusLabel;
 @property (weak, nonatomic) IBOutlet UILabel *batteryOneState;
 @property (weak, nonatomic) IBOutlet UILabel *batteryTwoState;
 @property (weak, nonatomic) IBOutlet UILabel *aircraftLocationState;
+@property (weak, nonatomic) IBOutlet UIButton *debugButton;
 
 @end
 
