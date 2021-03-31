@@ -11,13 +11,14 @@
 		DA1CD04D25E73D9600DF3D45 /* ConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA1CD04825E73D9500DF3D45 /* ConfigViewController.m */; };
 		DA4B102125FED16700C986CD /* CameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4B102025FED16700C986CD /* CameraController.m */; };
 		DA4B102B25FF077500C986CD /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4B102A25FF077500C986CD /* Constants.m */; };
+		DA627B76261515350016323F /* DJIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = DA627B75261515350016323F /* DJIUtils.m */; };
 		DA7363B925E73C3700057830 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7363B825E73C3700057830 /* AppDelegate.m */; };
 		DA7363BC25E73C3700057830 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7363BB25E73C3700057830 /* SceneDelegate.m */; };
 		DA7363C225E73C3700057830 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA7363C025E73C3700057830 /* Main.storyboard */; };
 		DA7363C425E73C3A00057830 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA7363C325E73C3A00057830 /* Assets.xcassets */; };
 		DA7363C725E73C3A00057830 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA7363C525E73C3A00057830 /* LaunchScreen.storyboard */; };
 		DA7363CA25E73C3A00057830 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7363C925E73C3A00057830 /* main.m */; };
-		DA77B7EB25E7491600F2AC99 /* LiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA77B7EA25E7491600F2AC99 /* LiveViewController.m */; };
+		DA77B7EB25E7491600F2AC99 /* ConnectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA77B7EA25E7491600F2AC99 /* ConnectionController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,8 @@
 		DA4B102325FED19600C986CD /* CameraController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CameraController.h; sourceTree = "<group>"; };
 		DA4B102925FF073400C986CD /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		DA4B102A25FF077500C986CD /* Constants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
+		DA627B75261515350016323F /* DJIUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DJIUtils.m; sourceTree = "<group>"; };
+		DA627B78261515530016323F /* DJIUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DJIUtils.h; sourceTree = "<group>"; };
 		DA7363B425E73C3700057830 /* DroneClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DroneClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA7363B725E73C3700057830 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		DA7363B825E73C3700057830 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -40,8 +43,8 @@
 		DA7363C625E73C3A00057830 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DA7363C825E73C3A00057830 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DA7363C925E73C3A00057830 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		DA77B7E925E7491600F2AC99 /* LiveViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LiveViewController.h; sourceTree = "<group>"; };
-		DA77B7EA25E7491600F2AC99 /* LiveViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LiveViewController.m; sourceTree = "<group>"; };
+		DA77B7E925E7491600F2AC99 /* ConnectionController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConnectionController.h; sourceTree = "<group>"; };
+		DA77B7EA25E7491600F2AC99 /* ConnectionController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConnectionController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,10 +97,12 @@
 				DA7363B825E73C3700057830 /* AppDelegate.m */,
 				DA7363BA25E73C3700057830 /* SceneDelegate.h */,
 				DA7363BB25E73C3700057830 /* SceneDelegate.m */,
-				DA4B102025FED16700C986CD /* CameraController.m */,
 				DA4B102325FED19600C986CD /* CameraController.h */,
-				DA77B7E925E7491600F2AC99 /* LiveViewController.h */,
-				DA77B7EA25E7491600F2AC99 /* LiveViewController.m */,
+				DA4B102025FED16700C986CD /* CameraController.m */,
+				DA77B7E925E7491600F2AC99 /* ConnectionController.h */,
+				DA77B7EA25E7491600F2AC99 /* ConnectionController.m */,
+				DA627B75261515350016323F /* DJIUtils.m */,
+				DA627B78261515530016323F /* DJIUtils.h */,
 				DA7363C025E73C3700057830 /* Main.storyboard */,
 				DA7363C325E73C3A00057830 /* Assets.xcassets */,
 				DA7363C525E73C3A00057830 /* LaunchScreen.storyboard */,
@@ -233,8 +238,9 @@
 				DA7363CA25E73C3A00057830 /* main.m in Sources */,
 				DA7363BC25E73C3700057830 /* SceneDelegate.m in Sources */,
 				DA4B102125FED16700C986CD /* CameraController.m in Sources */,
+				DA627B76261515350016323F /* DJIUtils.m in Sources */,
 				DA4B102B25FF077500C986CD /* Constants.m in Sources */,
-				DA77B7EB25E7491600F2AC99 /* LiveViewController.m in Sources */,
+				DA77B7EB25E7491600F2AC99 /* ConnectionController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

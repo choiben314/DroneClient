@@ -6,7 +6,7 @@
 //
 
 #import "ConfigViewController.h"
-#import "LiveViewController.h"
+#import "ConnectionController.h"
 #import <DJISDK/DJISDK.h>
 #import "Constants.h"
 
@@ -46,7 +46,7 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
     if([segue.identifier isEqualToString:@"connect"]){
-        LiveViewController *controller = (LiveViewController *)segue.destinationViewController;
+        ConnectionController *controller = (ConnectionController *)segue.destinationViewController;
         controller->ipAddress = _ipAddressTextField.text;
         controller->port = _portTextField.text;
     }
