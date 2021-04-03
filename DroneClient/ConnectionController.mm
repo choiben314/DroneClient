@@ -8,8 +8,9 @@
 #import "ConnectionController.h"
 #import "DJIUtils.h"
 #import "Constants.h"
+#import "DroneComms.hpp"
 
-@interface ConnectionController ()<DJISDKManagerDelegate, DJICameraDelegate, DJIBatteryDelegate, DJIBatteryAggregationDelegate, DJIFlightControllerDelegate>
+@interface ConnectionController ()<DJISDKManagerDelegate, DJICameraDelegate, DJIBatteryDelegate, DJIBatteryAggregationDelegate, DJIFlightControllerDelegate, DJIVideoFeedListener, NSStreamDelegate>
 
 @end
 
@@ -31,7 +32,7 @@
 {
     [super viewWillDisappear:animated];
     [[DJIVideoPreviewer instance] setView:nil];
-    [[DJISDKManager videoFeeder].primaryVideoFeed removeListener:self];
+//    [[DJISDKManager videoFeeder].primaryVideoFeed removeListener:self];
 }
 
 - (void)viewDidLoad {
@@ -46,12 +47,54 @@
     _serverConnectionStatusLabel.text = @"Server Status: Writing...";
     NSString *response  = [NSString stringWithFormat:@"%@", message];
     NSData *data = [[NSData alloc] initWithData:[response dataUsingEncoding:NSASCIIStringEncoding]];
-    [outputStream write:[data bytes] maxLength:[data length]];
+    const unsigned  char *bytes= (const unsigned  char *)(data.bytes);
+    [outputStream write:bytes maxLength:[data length]];
     _serverConnectionStatusLabel.text = @"Server Status: Connected";
 }
 
+- (void) sendPacket_CoreTelemetry {
+    DroneInterface::Packet_CoreTelemetry packet_core;
+    DroneInterface::Packet packet;
+    
+//    packet_core.isFlying = self->_isFlying;
+//    packet_core.Latitude = self->_Latitude;
+//    packet_core.Longitude = self->_Longitude;
+//    packet_core.Altitude = self->_Altitude;
+//    packet_core.HAG = self->_HAG;
+//    packet_core.V_N = self->_velocity_n;
+//    packet_core.V_N = self->_velocity_e;
+//    packet_core.V_D = self->_velocity_d;
+//    packet_core.Yaw = self->_yaw;
+//    packet_core.Pitch = self->_pitch;
+//    packet_core.Roll = self->_roll;
+    
+    packet_core.IsFlying = 1;
+    packet_core.Latitude = 40.34555;
+    packet_core.Longitude = 123.3333333;
+    packet_core.Altitude = 1233;
+    packet_core.HAG = 123;
+    packet_core.V_N = 123.4;
+    packet_core.V_N = 11.11123;
+    packet_core.V_D = 333;
+    packet_core.Yaw = 11;
+    packet_core.Pitch = 0;
+    packet_core.Roll = -23.4;
+    
+    packet_core.Serialize(packet);
+    
+//    NSString *response  = [NSString stringWithFormat:@"%@", message];
+//    NSData *data = [[NSData alloc] initWithData:[response dataUsingEncoding:NSASCIIStringEncoding]];
+//    unsigned char* bytes;
+//    unsigned int length;
+//    packet.GetCharBuffer(bytes, length);
+    NSData *data = [[NSData alloc] initWithBytesNoCopy:packet.m_data.data() length:packet.m_data.size() freeWhenDone:false];
+    const unsigned char *bytes= (const unsigned char *)(data.bytes);
+    [outputStream write:bytes maxLength:[data length]];
+}
+
 - (IBAction)sendDebugMessage:(id)sender {
-    [self sendMessage:TEST_MESSAGE];
+//    [self sendMessage:TEST_MESSAGE];
+    [self sendPacket_CoreTelemetry];
 }
 
 - (void) messageReceived:(NSString *)message {
@@ -232,11 +275,13 @@
 #pragma mark - DJIBatteryDelegate
 - (void)battery:(DJIBattery *)battery didUpdateState:(DJIBatteryState *)state
 {
+    NSLog(@"reeewtf");
     self->_bat_level = state.chargeRemainingInPercent;
 }
 
-#pragma mark - DJIBatteryAggregatioNDelegate
+#pragma mark - DJIBatteryAggregationDelegate
 - (void) batteriesDidUpdateState:(DJIBatteryAggregationState *)state {
+    NSLog(@"reee");
     self->_bat_level = state.chargeRemainingInPercent;
 }
 
@@ -245,9 +290,8 @@
 - (void)flightController:(DJIFlightController *)fc didUpdateState:(DJIFlightControllerState *)state
 {
     self->_GNSSSignal = (UInt8)(state.GPSSignalLevel);
-    if([DJIUtils gpsStatusIsGood:self->_GNSSSignal])
+    if([DJIUtils gpsStatusIsGood:[state GPSSignalLevel]])
     {
-        // Core Telemetry Packet
         self->_latitude = state.aircraftLocation.coordinate.latitude;
         self->_longitude = state.aircraftLocation.coordinate.longitude;
         self->_HAG = state.aircraftLocation.altitude;

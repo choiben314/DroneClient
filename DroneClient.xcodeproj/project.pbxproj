@@ -12,13 +12,15 @@
 		DA4B102125FED16700C986CD /* CameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4B102025FED16700C986CD /* CameraController.m */; };
 		DA4B102B25FF077500C986CD /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4B102A25FF077500C986CD /* Constants.m */; };
 		DA627B76261515350016323F /* DJIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = DA627B75261515350016323F /* DJIUtils.m */; };
+		DA627B82261545DF0016323F /* DroneComms.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA627B81261545DF0016323F /* DroneComms.cpp */; };
+		DA627B8826181B210016323F /* DroneCommsWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = DA627B8726181B210016323F /* DroneCommsWrapper.mm */; };
 		DA7363B925E73C3700057830 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7363B825E73C3700057830 /* AppDelegate.m */; };
 		DA7363BC25E73C3700057830 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7363BB25E73C3700057830 /* SceneDelegate.m */; };
 		DA7363C225E73C3700057830 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA7363C025E73C3700057830 /* Main.storyboard */; };
 		DA7363C425E73C3A00057830 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA7363C325E73C3A00057830 /* Assets.xcassets */; };
 		DA7363C725E73C3A00057830 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA7363C525E73C3A00057830 /* LaunchScreen.storyboard */; };
 		DA7363CA25E73C3A00057830 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7363C925E73C3A00057830 /* main.m */; };
-		DA77B7EB25E7491600F2AC99 /* ConnectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA77B7EA25E7491600F2AC99 /* ConnectionController.m */; };
+		DA77B7EB25E7491600F2AC99 /* ConnectionController.mm in Sources */ = {isa = PBXBuildFile; fileRef = DA77B7EA25E7491600F2AC99 /* ConnectionController.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +35,11 @@
 		DA4B102A25FF077500C986CD /* Constants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
 		DA627B75261515350016323F /* DJIUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DJIUtils.m; sourceTree = "<group>"; };
 		DA627B78261515530016323F /* DJIUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DJIUtils.h; sourceTree = "<group>"; };
+		DA627B80261545DF0016323F /* DroneComms.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DroneComms.hpp; sourceTree = "<group>"; };
+		DA627B81261545DF0016323F /* DroneComms.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DroneComms.cpp; sourceTree = "<group>"; };
+		DA627B84261546C50016323F /* Drone.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Drone.hpp; sourceTree = "<group>"; };
+		DA627B8626181AB10016323F /* DroneCommsWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DroneCommsWrapper.h; sourceTree = "<group>"; };
+		DA627B8726181B210016323F /* DroneCommsWrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DroneCommsWrapper.mm; sourceTree = "<group>"; };
 		DA7363B425E73C3700057830 /* DroneClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DroneClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA7363B725E73C3700057830 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		DA7363B825E73C3700057830 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -44,7 +51,7 @@
 		DA7363C825E73C3A00057830 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DA7363C925E73C3A00057830 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		DA77B7E925E7491600F2AC99 /* ConnectionController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConnectionController.h; sourceTree = "<group>"; };
-		DA77B7EA25E7491600F2AC99 /* ConnectionController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConnectionController.m; sourceTree = "<group>"; };
+		DA77B7EA25E7491600F2AC99 /* ConnectionController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ConnectionController.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,9 +96,14 @@
 		DA7363B625E73C3700057830 /* DroneClient */ = {
 			isa = PBXGroup;
 			children = (
+				DA627B81261545DF0016323F /* DroneComms.cpp */,
+				DA627B80261545DF0016323F /* DroneComms.hpp */,
 				DA1CD04925E73D9500DF3D45 /* ConfigViewController.h */,
 				DA1CD04825E73D9500DF3D45 /* ConfigViewController.m */,
+				DA627B84261546C50016323F /* Drone.hpp */,
 				DA4B102925FF073400C986CD /* Constants.h */,
+				DA627B8626181AB10016323F /* DroneCommsWrapper.h */,
+				DA627B8726181B210016323F /* DroneCommsWrapper.mm */,
 				DA4B102A25FF077500C986CD /* Constants.m */,
 				DA7363B725E73C3700057830 /* AppDelegate.h */,
 				DA7363B825E73C3700057830 /* AppDelegate.m */,
@@ -100,7 +112,7 @@
 				DA4B102325FED19600C986CD /* CameraController.h */,
 				DA4B102025FED16700C986CD /* CameraController.m */,
 				DA77B7E925E7491600F2AC99 /* ConnectionController.h */,
-				DA77B7EA25E7491600F2AC99 /* ConnectionController.m */,
+				DA77B7EA25E7491600F2AC99 /* ConnectionController.mm */,
 				DA627B75261515350016323F /* DJIUtils.m */,
 				DA627B78261515530016323F /* DJIUtils.h */,
 				DA7363C025E73C3700057830 /* Main.storyboard */,
@@ -237,10 +249,12 @@
 				DA7363B925E73C3700057830 /* AppDelegate.m in Sources */,
 				DA7363CA25E73C3A00057830 /* main.m in Sources */,
 				DA7363BC25E73C3700057830 /* SceneDelegate.m in Sources */,
+				DA627B82261545DF0016323F /* DroneComms.cpp in Sources */,
 				DA4B102125FED16700C986CD /* CameraController.m in Sources */,
+				DA627B8826181B210016323F /* DroneCommsWrapper.mm in Sources */,
 				DA627B76261515350016323F /* DJIUtils.m in Sources */,
 				DA4B102B25FF077500C986CD /* Constants.m in Sources */,
-				DA77B7EB25E7491600F2AC99 /* ConnectionController.m in Sources */,
+				DA77B7EB25E7491600F2AC99 /* ConnectionController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -386,6 +400,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = PYF2F3FXQD;
+				GCC_INPUT_FILETYPE = automatic;
 				INFOPLIST_FILE = DroneClient/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -405,6 +420,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = PYF2F3FXQD;
+				GCC_INPUT_FILETYPE = automatic;
 				INFOPLIST_FILE = DroneClient/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
