@@ -18,6 +18,9 @@
 +(DJIBattery*) fetchBattery;
 +(DJICamera*) fetchCamera;
 +(bool)gpsStatusIsGood:(DJIGPSSignalLevel) signalStatus;
++(int8_t)getGNSSSignal:(DJIGPSSignalLevel) signalStatus;
++(int8_t)getWindLevel:(DJIFlightWindWarning) windWarning;
++(UInt8)getFlightMode:(DJIFlightMode) flightMode;
 @end
 
 

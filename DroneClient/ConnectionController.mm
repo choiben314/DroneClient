@@ -10,7 +10,7 @@
 #import "Constants.h"
 #import "DroneComms.hpp"
 
-@interface ConnectionController ()<DJISDKManagerDelegate, DJICameraDelegate, DJIBatteryDelegate, DJIBatteryAggregationDelegate, DJIFlightControllerDelegate, DJIVideoFeedListener, NSStreamDelegate>
+@interface ConnectionController ()<DJISDKManagerDelegate, DJICameraDelegate, DJIBatteryDelegate, DJIBatteryAggregationDelegate, DJIFlightControllerDelegate, DJIVideoFeedListener, NSStreamDelegate, VideoFrameProcessor>
 
 @end
 
@@ -42,14 +42,10 @@
 
 #pragma mark TCP Connection
 
-- (void) sendMessage:(NSString *)message {
-    NSLog(@"SKDLJFKDSJFLSDF");
-    _serverConnectionStatusLabel.text = @"Server Status: Writing...";
-    NSString *response  = [NSString stringWithFormat:@"%@", message];
-    NSData *data = [[NSData alloc] initWithData:[response dataUsingEncoding:NSASCIIStringEncoding]];
-    const unsigned  char *bytes= (const unsigned  char *)(data.bytes);
+- (void) sendPacket:(DroneInterface::Packet *)packet {
+    NSData *data = [[NSData alloc] initWithBytesNoCopy:packet->m_data.data() length:packet->m_data.size() freeWhenDone:false];
+    const unsigned char *bytes= (const unsigned char *)(data.bytes);
     [outputStream write:bytes maxLength:[data length]];
-    _serverConnectionStatusLabel.text = @"Server Status: Connected";
 }
 
 - (void) sendPacket_CoreTelemetry {
@@ -74,7 +70,7 @@
     packet_core.Altitude = 1233;
     packet_core.HAG = 123;
     packet_core.V_N = 123.4;
-    packet_core.V_N = 11.11123;
+    packet_core.V_E = 11.11123;
     packet_core.V_D = 333;
     packet_core.Yaw = 11;
     packet_core.Pitch = 0;
@@ -82,18 +78,51 @@
     
     packet_core.Serialize(packet);
     
-//    NSString *response  = [NSString stringWithFormat:@"%@", message];
-//    NSData *data = [[NSData alloc] initWithData:[response dataUsingEncoding:NSASCIIStringEncoding]];
-//    unsigned char* bytes;
-//    unsigned int length;
-//    packet.GetCharBuffer(bytes, length);
-    NSData *data = [[NSData alloc] initWithBytesNoCopy:packet.m_data.data() length:packet.m_data.size() freeWhenDone:false];
-    const unsigned char *bytes= (const unsigned char *)(data.bytes);
-    [outputStream write:bytes maxLength:[data length]];
+    [self sendPacket:&packet];
+}
+
+- (void) sendPacket_ExtendedTelemetry {
+    DroneInterface::Packet_ExtendedTelemetry packet_extended;
+    DroneInterface::Packet packet;
+    
+    packet_extended.GNSSSatCount = self->_GNSSSatCount;
+    packet_extended.GNSSSignal = self->_GNSSSignal;
+    packet_extended.MaxHeight =self->_max_height;
+    packet_extended.MaxDist = self->_max_dist;
+    packet_extended.BatLevel = self->_bat_level;
+    packet_extended.BatWarning = self->_bat_warning;
+    packet_extended.WindLevel = self->_wind_level;
+    packet_extended.DJICam = self->_dji_cam;
+    packet_extended.FlightMode = self->_flight_mode;
+    packet_extended.MissionID = self->_mission_id;
+    packet_extended.DroneSerial = std::string([self->_drone_serial UTF8String]);
+    
+    packet_extended.Serialize(packet);
+    
+    [self sendPacket:&packet];
+}
+
+- (void) sendPacket_Image {
+    DroneInterface::Packet_Image packet_image;
+    DroneInterface::Packet packet;
+    
+    packet_image.TargetFPS = 30;
+    
+}
+
+- (void) sendPacket_MessageString:(NSString*)msg ofType:(UInt8)type {
+    DroneInterface::Packet_MessageString packet_msg;
+    DroneInterface::Packet packet;
+    
+    packet_msg.Type = type;
+    packet_msg.Message = std::string([msg UTF8String]);
+    
+    packet_msg.Serialize(packet);
+    
+    [self sendPacket: &packet];
 }
 
 - (IBAction)sendDebugMessage:(id)sender {
-//    [self sendMessage:TEST_MESSAGE];
     [self sendPacket_CoreTelemetry];
 }
 
@@ -215,6 +244,39 @@
 #endif
         [[DJISDKManager videoFeeder].primaryVideoFeed addListener:self withQueue:nil];
         [[DJIVideoPreviewer instance] start];
+        [[DJIVideoPreviewer instance] registFrameProcessor:self];
+}
+
+- (void) videoProcessFrame:(VideoFrameYUV *)frame {
+    if ([DJIVideoPreviewer instance].enableHardwareDecode &&
+        (frame->cv_pixelbuffer_fastupload != NULL)) {
+        CVPixelBufferRef pixelBuffer = (CVPixelBufferRef) frame->cv_pixelbuffer_fastupload;
+        if (*self->_pixelBuffer) {
+            CVPixelBufferRelease(*self->_pixelBuffer);
+        }
+        *self->_pixelBuffer = pixelBuffer;
+        CVPixelBufferRetain(pixelBuffer);
+    } else {
+        *self->_pixelBuffer = nil;
+    }
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        self.showImageButton.enabled = self->_pixelBuffer != nil;
+//    });
+}
+
+- (UIImage *)imageFromPixelBuffer:(CVPixelBufferRef)pixelBufferRef {
+    CVImageBufferRef imageBuffer =  pixelBufferRef;
+    CIImage* sourceImage = [[CIImage alloc] initWithCVPixelBuffer:imageBuffer options:nil];
+    CGSize size = sourceImage.extent.size;
+    UIGraphicsBeginImageContext(size);
+    CGRect rect;
+    rect.origin = CGPointZero;
+    rect.size = size;
+    UIImage *remImage = [UIImage imageWithCIImage:sourceImage];
+    [remImage drawInRect:rect];
+    UIImage *result = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return result;
 }
 
 #pragma mark DJISDKManagerDelegate Method
@@ -289,7 +351,7 @@
 
 - (void)flightController:(DJIFlightController *)fc didUpdateState:(DJIFlightControllerState *)state
 {
-    self->_GNSSSignal = (UInt8)(state.GPSSignalLevel);
+    self->_GNSSSignal = [DJIUtils getGNSSSignal:[state GPSSignalLevel]];
     if([DJIUtils gpsStatusIsGood:[state GPSSignalLevel]])
     {
         self->_latitude = state.aircraftLocation.coordinate.latitude;
@@ -319,8 +381,11 @@
             self->_bat_warning = 0;
         }
     }
-    self->_wind_level = state.windWarning;
-    self->_flight_mode = state.flightMode;
+    self->_wind_level = [DJIUtils getWindLevel:[state windWarning]];
+    self->_flight_mode = [DJIUtils getFlightMode:[state flightMode]];
+    
+    self->_dji_cam = 2;
+    self->_mission_id = 0;
 }
 
 @end

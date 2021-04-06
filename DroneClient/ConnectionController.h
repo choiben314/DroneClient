@@ -43,16 +43,19 @@ NS_ASSUME_NONNULL_BEGIN
     
     // Extended Telemetry
     UInt16 _GNSSSatCount;
-    UInt8 _GNSSSignal;
+    int8_t _GNSSSignal;
     UInt8 _max_height;
     UInt8 _max_dist;
     UInt8 _bat_level;
     UInt8 _bat_warning;
-    UInt8 _wind_level;
+    int8_t _wind_level;
     UInt8 _dji_cam;
     UInt8 _flight_mode;
     UInt16 _mission_id;
     NSString *_drone_serial;
+    
+    // Video
+    CVPixelBufferRef *_pixelBuffer;
 }
 @property (nonatomic, strong) DJICamera* camera;
 @property (weak, nonatomic) IBOutlet UIView *fpvPreviewView;
