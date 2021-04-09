@@ -9,8 +9,9 @@
 #import "DJIUtils.h"
 #import "Constants.h"
 #import "DroneComms.hpp"
+#import "VideoPreviewerSDKAdapter.h"
 
-@interface ConnectionController ()<DJISDKManagerDelegate, DJICameraDelegate, DJIBatteryDelegate, DJIBatteryAggregationDelegate, DJIFlightControllerDelegate, DJIVideoFeedListener, NSStreamDelegate, VideoFrameProcessor>
+@interface ConnectionController ()<DJISDKManagerDelegate, DJICameraDelegate, DJIBatteryDelegate, DJIBatteryAggregationDelegate, DJIFlightControllerDelegate, NSStreamDelegate, DJIVideoFeedListener>
 
 @end
 
@@ -32,7 +33,7 @@
 {
     [super viewWillDisappear:animated];
     [[DJIVideoPreviewer instance] setView:nil];
-//    [[DJISDKManager videoFeeder].primaryVideoFeed removeListener:self];
+    [[DJISDKManager videoFeeder].primaryVideoFeed removeListener:self];
 }
 
 - (void)viewDidLoad {
@@ -234,35 +235,55 @@
 
 #pragma mark DJI Methods
 
-- (void) configureConnectionToProduct
-{
+- (void) configureConnectionToProduct {
     _uavConnectionStatusLabel.text = @"UAV Status: Connecting...";
 #if ENABLE_DEBUG_MODE
-        [DJISDKManager enableBridgeModeWithBridgeAppIP:@"192.168.0.26"];
+    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"10.0.0.76"];
 #else
-        [DJISDKManager startConnectionToProduct];
+    [DJISDKManager startConnectionToProduct];
 #endif
-        [[DJISDKManager videoFeeder].primaryVideoFeed addListener:self withQueue:nil];
-        [[DJIVideoPreviewer instance] start];
-        [[DJIVideoPreviewer instance] registFrameProcessor:self];
+    [[DJISDKManager videoFeeder].primaryVideoFeed addListener:self withQueue:nil];
+//    [[DJIVideoPreviewer instance] registFrameProcessor:self];
+//    [[DJIVideoPreviewer instance] setEnableHardwareDecode:true];
+//    [[DJIVideoPreviewer instance] setEnableFastUpload:true];
+//    self.previewerAdapter = [VideoPreviewerSDKAdapter adapterWithDefaultSettings];
+//    [self.previewerAdapter start];
+//    [[DJIVideoPreviewer instance] registFrameProcessor:self];
+//    [[DJIVideoPreviewer instance] setEnableHardwareDecode:true];
+//    [[DJIVideoPreviewer instance] setEnableFastUpload:true];
+//    [[DJIVideoPreviewer instance] setEncoderType:H264EncoderType_H1_Inspire2];
+//    [[DJIVideoPreviewer instance] setType:DJIVideoPreviewerTypeNone];
+//
+    [[DJIVideoPreviewer instance] start];
 }
-
-- (void) videoProcessFrame:(VideoFrameYUV *)frame {
-    if ([DJIVideoPreviewer instance].enableHardwareDecode &&
-        (frame->cv_pixelbuffer_fastupload != NULL)) {
-        CVPixelBufferRef pixelBuffer = (CVPixelBufferRef) frame->cv_pixelbuffer_fastupload;
-        if (*self->_pixelBuffer) {
-            CVPixelBufferRelease(*self->_pixelBuffer);
-        }
-        *self->_pixelBuffer = pixelBuffer;
-        CVPixelBufferRetain(pixelBuffer);
-    } else {
-        *self->_pixelBuffer = nil;
-    }
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        self.showImageButton.enabled = self->_pixelBuffer != nil;
-//    });
-}
+//
+//- (void) videoProcessFrame:(VideoFrameYUV *)frame {
+//    if ((frame->cv_pixelbuffer_fastupload != nil)) {
+//        NSLog(@"HELLOHELLO");
+//        CVPixelBufferRef pixelBuffer = (CVPixelBufferRef) frame->cv_pixelbuffer_fastupload;
+////        if (*self->_pixelBuffer) {
+////            CVPixelBufferRelease(*self->_pixelBuffer);
+////        }
+//        *self->_pixelBuffer = pixelBuffer;
+////        CVPixelBufferRetain(pixelBuffer);
+//        
+//        UIImage *frame = [self imageFromPixelBuffer:*self->_pixelBuffer];
+////
+////        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+////        NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"Image.png"];
+////
+////        [UIImagePNGRepresentation(frame) writeToFile:filePath atomically:YES];
+//    } else {
+//        NSLog(@"SADSAD");
+//    }
+////    dispatch_async(dispatch_get_main_queue(), ^{
+////        self.showImageButton.enabled = self->_pixelBuffer != nil;
+////    });
+//}
+//
+//- (BOOL)videoProcessorEnabled {
+//    return YES;
+//}
 
 - (UIImage *)imageFromPixelBuffer:(CVPixelBufferRef)pixelBufferRef {
     CVImageBufferRef imageBuffer =  pixelBufferRef;
@@ -325,6 +346,14 @@
 
 -(void) camera:(DJICamera*)camera didUpdateSystemState:(DJICameraSystemState*)systemState
 {
+    if (systemState.mode == DJICameraModePlayback ||
+        systemState.mode == DJICameraModeMediaDownload) {
+        if (self->needToSetMode) {
+            self->needToSetMode = NO;
+            [camera setMode:DJICameraModeShootPhoto withCompletion:^(NSError * _Nullable error) {
+            }];
+        }
+    }
 }
 
 - (void)camera:(DJICamera *_Nonnull)camera

@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 #import <DJISDK/DJISDK.h>
 #import <DJIWidget/DJIVideoPreviewer.h>
+#import "VideoPreviewerSDKAdapter.h"
 
 #define WeakRef(__obj) __weak typeof(self) __obj = self
 #define WeakReturn(__obj) if(__obj ==nil)return;
@@ -27,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSOutputStream  *outputStream;
 
     NSMutableArray  *messages;
+    
+    int needToSetMode;
     
     // Core Telemetry
     UInt8 _isFlying;
@@ -65,6 +68,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UILabel *batteryTwoState;
 @property (weak, nonatomic) IBOutlet UILabel *aircraftLocationState;
 @property (weak, nonatomic) IBOutlet UIButton *debugButton;
+
+@property(nonatomic) VideoPreviewerSDKAdapter *previewerAdapter;
+@property(atomic) CVPixelBufferRef currentPixelBuffer;
 
 @end
 
