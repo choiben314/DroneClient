@@ -50,6 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
     UInt8 _max_height;
     UInt8 _max_dist;
     UInt8 _bat_level;
+    UInt8 _bat_level_one;
+    UInt8 _bat_level_two;
     UInt8 _bat_warning;
     int8_t _wind_level;
     UInt8 _dji_cam;
@@ -62,6 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @property (nonatomic, strong) DJICamera* camera;
 @property (weak, nonatomic) IBOutlet UIView *fpvPreviewView;
+@property (weak, nonatomic) IBOutlet UILabel *registrationStatusLabel;
 @property (weak, nonatomic) IBOutlet UILabel *serverConnectionStatusLabel;
 @property (weak, nonatomic) IBOutlet UILabel *uavConnectionStatusLabel;
 @property (weak, nonatomic) IBOutlet UILabel *batteryOneState;

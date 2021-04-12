@@ -1,9 +1,3 @@
-//DroneComms provides data structures and serialization/deserialization support for socket communications between server and client
-//Author: Bryan Poling
-//Copyright (c) 2021 Sentek Systems, LLC. All rights reserved. 
-
-//System Includes
-
 //Project Includes
 #include "DroneComms.hpp"
 
@@ -58,13 +52,17 @@ static void encodeField_String (std::vector<uint8_t> & Buffer, const std::string
 		Buffer.push_back((uint8_t) item);
 }
 
-//static void encodeField_Image (std::vector<uint8_t> & Buffer, cv::Mat const & x) {
-//	if (x.type() != CV_8UC3) {
-//		std::cerr << "Internal Error in encodeField_Image(): Only 3-channel (RGB) 8-bit depth images supported.\r\n";
-//		return;
-//	}
-//	encodeField_uint16(Buffer, (uint16_t) x.rows);
-//	encodeField_uint16(Buffer, (uint16_t) x.cols);
+static void encodeField_Image (std::vector<uint8_t> & Buffer, const Image * x) {
+	encodeField_uint16(Buffer, (uint16_t) x->rows);
+	encodeField_uint16(Buffer, (uint16_t) x->cols);
+    
+    int buffer_length = x->rows * x->cols * x->size_pixel;
+    
+    for (int i = 0; i < buffer_length; i += x->size_pixel) {
+        encodeField_uint8(Buffer, (uint8_t) x->bitmap[i]);
+        encodeField_uint8(Buffer, (uint8_t) x->bitmap[i + 1]);
+        encodeField_uint8(Buffer, (uint8_t) x->bitmap[i + 2]);
+    }
 //	for (int row = 0; row < x.rows; row++) {
 //		for (int col = 0; col < x.cols; col++) {
 //			cv::Vec3b pixel = x.at<cv::Vec3b>(row, col);
@@ -73,7 +71,7 @@ static void encodeField_String (std::vector<uint8_t> & Buffer, const std::string
 //			encodeField_uint8(Buffer, (uint8_t) pixel(0)); //Blue
 //		}
 //	}
-//}
+}
 
 
 // ****************************************************************************************************************************************
@@ -156,44 +154,6 @@ static std::string decodeField_String (std::vector<uint8_t>::const_iterator & It
 	MaxBytes -= bytesForObject;
 	return(S);
 }
-
-//MaxBytes is the maximum number of bytes that can belong to the full Image object (row/col fields included). This is a reference argument that will be
-//decremented by the number of decoded bytes. If the field advertises a size that would make the full Image object exceed this number of
-//bytes, then we replace the advertised length with the largest safe value.
-//static cv::Mat decodeField_Image (std::vector<uint8_t>::const_iterator & Iter, unsigned int & MaxBytes) {
-//	if (MaxBytes < 4U) {
-//		fprintf(stderr,"Warning in decodeField_Image: Not enough bytes left for Image. Aborting decode.\r\n");
-//		Iter += MaxBytes;
-//		MaxBytes = 0U;
-//		return cv::Mat(0, 0, CV_8UC3);
-//	}
-//
-//	uint16_t rows = decodeField_uint16(Iter);
-//	uint16_t cols = decodeField_uint16(Iter);
-//	uint32_t totalBytes = uint32_t(rows)*uint32_t(cols)*uint32_t(3U) + uint32_t(4U);
-//	if (totalBytes > MaxBytes) {
-//		fprintf(stderr,"Warning in decodeField_Image: Not enough bytes left for Image. Aborting decode.\r\n");
-//		Iter += MaxBytes;
-//		MaxBytes = 0U;
-//		return cv::Mat(0, 0, CV_8UC3);
-//	}
-//
-//	cv::Mat Image(rows, cols, CV_8UC3);
-//	for (int row = 0; row < Image.rows; row++) {
-//		for (int col = 0; col < Image.cols; col++) {
-//			uint8_t R = decodeField_uint8(Iter);
-//			uint8_t G = decodeField_uint8(Iter);
-//			uint8_t B = decodeField_uint8(Iter);
-//
-//			cv::Vec3b & pixel(Image.at<cv::Vec3b>(row, col));
-//			pixel(0) = B;
-//			pixel(1) = G;
-//			pixel(2) = R;
-//		}
-//	}
-//	return Image;
-//}
-
 
 namespace DroneInterface {
 	// ****************************************************************************************************************************************
@@ -422,28 +382,13 @@ namespace DroneInterface {
 //		return true;
 //	}
 //
-//	void Packet_Image::Serialize(Packet & TargetPacket) const {
+	void Packet_Image::Serialize(Packet & TargetPacket) const {
 //		TargetPacket.Clear();
 //		TargetPacket.AddHeader(uint32_t(9U + 4U + 4U + (unsigned int)(Frame.rows*Frame.cols*3)), uint8_t(2U));
 //		encodeField_float32(TargetPacket.m_data, TargetFPS);
 //		encodeField_Image  (TargetPacket.m_data, Frame);
 //		TargetPacket.AddHash();
-//	}
-//
-//	bool Packet_Image::Deserialize(Packet const & SourcePacket) {
-//		if (! SourcePacket.CheckHashSizeAndPID((uint8_t) 2U))
-//			return false;
-//		if (SourcePacket.m_data.size() < 9U + 8U)
-//			return false;
-//
-//		auto iter = SourcePacket.m_data.cbegin() + 7U; //Const iterater to begining of payload
-//		TargetFPS = decodeField_float32(iter);
-//
-//		unsigned int MaxBytesForImage = (unsigned int) SourcePacket.m_data.size() - 9U - 4U;
-//		Frame = decodeField_Image(iter, MaxBytesForImage);
-//		return true;
-//	}
-
+	}
 
 	// ****************************************************************************************************************************************
 	// ************************************************   Packet_Acknowledgment Implementation   **********************************************

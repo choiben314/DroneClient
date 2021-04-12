@@ -10,6 +10,8 @@
 #import "Constants.h"
 #import "DroneComms.hpp"
 #import "VideoPreviewerSDKAdapter.h"
+#import "ImageUtils.h"
+#import "Image.hpp"
 
 @interface ConnectionController ()<DJISDKManagerDelegate, DJICameraDelegate, DJIBatteryDelegate, DJIBatteryAggregationDelegate, DJIFlightControllerDelegate, NSStreamDelegate, DJIVideoFeedListener, VideoFrameProcessor>
 
@@ -22,13 +24,6 @@
     [super viewDidAppear:animated];
     [self registerApp];
     [self configureConnectionToProduct];
-//    UIView *newView = [[UIView alloc] initWithFrame:CGRectMake(0,0,1280,720)];
-//    [[DJIVideoPreviewer instance] setView:self.fpvPreviewView];
-    NSLog(@"debug: width %f", self.fpvPreviewView.frame.size.width);
-    NSLog(@"debug: height %f", self.fpvPreviewView.frame.size.height);
-//    UIView *newView = [[UIView alloc] initWithFrame:CGRectMake(0,0,1280,720)];
-//    [[DJIVideoPreviewer instance] setView:newView];
-//    [self.fpvPreviewView addSubview:newView];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -59,29 +54,17 @@
     DroneInterface::Packet_CoreTelemetry packet_core;
     DroneInterface::Packet packet;
     
-//    packet_core.isFlying = self->_isFlying;
-//    packet_core.Latitude = self->_Latitude;
-//    packet_core.Longitude = self->_Longitude;
-//    packet_core.Altitude = self->_Altitude;
-//    packet_core.HAG = self->_HAG;
-//    packet_core.V_N = self->_velocity_n;
-//    packet_core.V_N = self->_velocity_e;
-//    packet_core.V_D = self->_velocity_d;
-//    packet_core.Yaw = self->_yaw;
-//    packet_core.Pitch = self->_pitch;
-//    packet_core.Roll = self->_roll;
-    
-    packet_core.IsFlying = 1;
-    packet_core.Latitude = 40.34555;
-    packet_core.Longitude = 123.3333333;
-    packet_core.Altitude = 1233;
-    packet_core.HAG = 123;
-    packet_core.V_N = 123.4;
-    packet_core.V_E = 11.11123;
-    packet_core.V_D = 333;
-    packet_core.Yaw = 11;
-    packet_core.Pitch = 0;
-    packet_core.Roll = -23.4;
+    packet_core.IsFlying = self->_isFlying;
+    packet_core.Latitude = self->_latitude;
+    packet_core.Longitude = self->_longitude;
+    packet_core.Altitude = self->_altitude;
+    packet_core.HAG = self->_HAG;
+    packet_core.V_N = self->_velocity_n;
+    packet_core.V_N = self->_velocity_e;
+    packet_core.V_D = self->_velocity_d;
+    packet_core.Yaw = self->_yaw;
+    packet_core.Pitch = self->_pitch;
+    packet_core.Roll = self->_roll;
     
     packet_core.Serialize(packet);
     
@@ -113,11 +96,24 @@
     DroneInterface::Packet_Image packet_image;
     DroneInterface::Packet packet;
     
-    packet_image.TargetFPS = 30;
+    [self showCurrentFrameImage];
     
+    CVPixelBufferRef pixelBuffer;
+    if (self->_currentPixelBuffer) {
+        pixelBuffer = self->_currentPixelBuffer;
+        UIImage* image = [self imageFromPixelBuffer:pixelBuffer];
+        packet_image.TargetFPS = [DJIVideoPreviewer instance].currentStreamInfo.frameRate;
+        unsigned char *bitmap = [ImageUtils convertUIImageToBitmapRGBA8:image];
+        packet_image.Frame = new Image(bitmap, image.size.height, image.size.width, 4);
+    }
+    
+    packet_image.Serialize(packet);
+    
+    [self sendPacket:&packet];
 }
 
 - (void) sendPacket_MessageString:(NSString*)msg ofType:(UInt8)type {
+    
     DroneInterface::Packet_MessageString packet_msg;
     DroneInterface::Packet packet;
     
@@ -130,8 +126,10 @@
 }
 
 - (IBAction)sendDebugMessage:(id)sender {
-//    [self sendPacket_CoreTelemetry];
-    [self showCurrentFrameImage];
+//    [self sendPacket_MessageString: @"Testing the message string..." ofType: 2];
+    [self sendPacket_ExtendedTelemetry];
+//    [self showCurrentFrameImage];
+//    [self sendPacket_Image];
 }
 
 - (void) messageReceived:(NSString *)message {
@@ -245,64 +243,29 @@
 - (void) configureConnectionToProduct {
     _uavConnectionStatusLabel.text = @"UAV Status: Connecting...";
 #if ENABLE_DEBUG_MODE
-//    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"10.0.0.76"];
+    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"192.168.43.110"];
 #else
     [DJISDKManager startConnectionToProduct];
 #endif
     [DJISDKManager startConnectionToProduct];
-//    [[DJISDKManager videoFeeder].primaryVideoFeed addListener:self withQueue:nil];
-//    [DJISDKManager startConnectionToProduct];
-    
-//    [[DJIVideoPreviewer instance] registFrameProcessor:self];
-//    [[DJIVideoPreviewer instance] setEnableHardwareDecode:true];
-//    [[DJIVideoPreviewer instance] setEnableFastUpload:true];
-//    [[DJIVideoPreviewer instance] setEnableHardwareDecode:true];
-//    [[DJIVideoPreviewer instance] setEnableFastUpload:true];
-//    [[DJIVideoPreviewer instance] setEncoderType:H264EncoderType_H1_Inspire2];
-//    [[DJIVideoPreviewer instance] setType:DJIVideoPreviewerTypeNone];
-//
-//
+
     [[DJIVideoPreviewer instance] start];
     self.previewerAdapter = [VideoPreviewerSDKAdapter adapterWithDefaultSettings];
     [self.previewerAdapter start];
     [[DJIVideoPreviewer instance] registFrameProcessor:self];
     [[DJIVideoPreviewer instance] setEnableHardwareDecode:true];
 }
-//
+
 - (void) videoProcessFrame:(VideoFrameYUV *)frame {
-    if ([DJIVideoPreviewer instance].enableHardwareDecode) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            _batteryOneState.text = @"SDLKFJSDLJKF";
-        });
-    }
     if ((frame->cv_pixelbuffer_fastupload != nil)) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            _batteryTwoState.text = @"REEEE";
-        });
         CVPixelBufferRef pixelBuffer = (CVPixelBufferRef) frame->cv_pixelbuffer_fastupload;
         if (self->_currentPixelBuffer) {
             CVPixelBufferRelease(self->_currentPixelBuffer);
         }
         self->_currentPixelBuffer = pixelBuffer;
         CVPixelBufferRetain(pixelBuffer);
-//        NSLog(@"HELLOHELLO");
-//        CVPixelBufferRef pixelBuffer = (CVPixelBufferRef) frame->cv_pixelbuffer_fastupload;
-////        if (*self->_pixelBuffer) {
-////            CVPixelBufferRelease(*self->_pixelBuffer);
-////        }
-//        *self->_pixelBuffer = pixelBuffer;
-////        CVPixelBufferRetain(pixelBuffer);
-//
-//        UIImage *frame = [self imageFromPixelBuffer:*self->_pixelBuffer];
-//
-//        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-//        NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"Image.png"];
-//
-//        [UIImagePNGRepresentation(frame) writeToFile:filePath atomically:YES];
     } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            _aircraftLocationState.text = @"REEEE123123";
-        });
+        self->_currentPixelBuffer = nil;
     }
 }
 
@@ -331,11 +294,8 @@
         pixelBuffer = self->_currentPixelBuffer;
         UIImage* image = [self imageFromPixelBuffer:pixelBuffer];
         if (image) {
-//            NSLog(@"Height: %.2f, Width: %.2f", image.size.height, image.size.width);
-//            UIView *newView = [[UIView alloc] initWithFrame:CGRectMake(0,0,1280,720)];
             UIImageView* imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, image.size.width, image.size.height)];
             imgView.image = image;
-//            [newView addSubview:imgview];
             [self.fpvPreviewView addSubview:imgView];
             _aircraftLocationState.text = [NSString stringWithFormat:@"Height: %.2f, Width: %.2f", image.size.height, image.size.width];
         }
@@ -370,7 +330,7 @@
         
     }
     
-    //[self setCoreTelemetryKeyedParameters];
+    [self setExtendedTelemetryKeyedParameters];
 }
 
 - (void)productDisconnected
@@ -388,20 +348,14 @@
     NSString* message;
     if (error) {
         message = @"Register App Failed! Please enter your App Key in the plist file and check the network.";
-//        _registrationStatusLabel.text = @"Registration Status: FAILED";
+        _registrationStatusLabel.text = @"Registration Status: FAILED";
         
     } else {
         message = @"App successfully registered";
-//        _registrationStatusLabel.text = @"Registration Status: SUCCESS";
+        _registrationStatusLabel.text = @"Registration Status: Registered";
     }
     NSLog(@"%@", message);
 }
-
-#pragma mark - DJIVideoFeedListener
-
-//-(void)videoFeed:(DJIVideoFeed *)videoFeed didUpdateVideoData:(NSData *)videoData {
-//    [[DJIVideoPreviewer instance] push:(uint8_t *)videoData.bytes length:(int)videoData.length];
-//}
 
 #pragma mark - DJICameraDelegate
 
@@ -425,16 +379,27 @@
 }
 
 #pragma mark - DJIBatteryDelegate
-- (void)battery:(DJIBattery *)battery didUpdateState:(DJIBatteryState *)state
-{
-    NSLog(@"reeewtf");
-    self->_bat_level = state.chargeRemainingInPercent;
-}
 
-#pragma mark - DJIBatteryAggregationDelegate
-- (void) batteriesDidUpdateState:(DJIBatteryAggregationState *)state {
-    NSLog(@"reee");
-    self->_bat_level = state.chargeRemainingInPercent;
+// Use keyed parameters method for battery level because DJIBatteryDelegate unresponsive for some reason.
+- (void)setExtendedTelemetryKeyedParameters {
+    DJIKey * batteryOneKey = [DJIBatteryKey keyWithIndex:0 andParam:DJIBatteryParamChargeRemainingInPercent];
+    DJIKey * batteryTwoKey = [DJIBatteryKey keyWithIndex:1 andParam:DJIBatteryParamChargeRemainingInPercent];
+    [[DJISDKManager keyManager] startListeningForChangesOnKey: batteryOneKey
+                                                 withListener: self
+                                               andUpdateBlock: ^(DJIKeyedValue * _Nullable oldKeyedValue, DJIKeyedValue * _Nullable newKeyedValue) {
+                                                if (newKeyedValue) {
+                                                    self->_bat_level_one = [newKeyedValue.value intValue];
+                                                    self->_bat_level = (self->_bat_level_one + self->_bat_level_two) / 2;
+                                                }
+                                            }];
+    [[DJISDKManager keyManager] startListeningForChangesOnKey: batteryTwoKey
+                                                 withListener: self
+                                               andUpdateBlock: ^(DJIKeyedValue * _Nullable oldKeyedValue, DJIKeyedValue * _Nullable newKeyedValue) {
+                                                if (newKeyedValue) {
+                                                    self->_bat_level_two = [newKeyedValue.value intValue];
+                                                    self->_bat_level = (self->_bat_level_one + self->_bat_level_two) / 2;
+                                                }
+                                            }];
 }
 
 #pragma mark - DJIFlightControllerDelegate
@@ -473,8 +438,10 @@
     }
     self->_wind_level = [DJIUtils getWindLevel:[state windWarning]];
     self->_flight_mode = [DJIUtils getFlightMode:[state flightMode]];
-    
-    self->_dji_cam = 2;
+
+    if (!self->_camera.isConnected) {
+        self->_dji_cam = 0;
+    }
     self->_mission_id = 0;
 }
 

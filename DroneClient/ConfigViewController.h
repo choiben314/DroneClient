@@ -18,7 +18,6 @@
 
 }
 
-@property (weak, nonatomic) IBOutlet UILabel *registrationStatusLabel;
 @property (weak, nonatomic) IBOutlet UITextField *ipAddressTextField;
 @property (weak, nonatomic) IBOutlet UITextField *portTextField;
 

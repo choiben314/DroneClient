@@ -1,6 +1,3 @@
-//DroneComms provides data structures and serialization/deserialization support for socket communications between server and client
-//Author: Bryan Poling
-//Copyright (c) 2021 Sentek Systems, LLC. All rights reserved. 
 #pragma once
 
 //System Includes
@@ -10,6 +7,7 @@
 
 //Project Includes
 #include "Drone.hpp"
+#include "Image.hpp"
 
 namespace DroneInterface {
 	//Packet for holding binary, serialized packet data
@@ -89,9 +87,9 @@ namespace DroneInterface {
 	
 	class Packet_Image {
 		public:
-			float   TargetFPS;
-//			cv::Mat Frame;
-			
+			float    TargetFPS;
+            Image*    Frame;
+            
 			Packet_Image()  = default;
 			~Packet_Image() = default;
 			bool operator==(Packet_Image const & Other) const; //If switching to C++20, default this

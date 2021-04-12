@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		668F264CFEEBA46D6D17C8AB /* libPods-DroneClient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1397D6D4FE61BD0B1B9A06B5 /* libPods-DroneClient.a */; };
+		DA1732DD2623F8E8001FC12C /* ImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = DA1732DC2623F8E8001FC12C /* ImageUtils.m */; };
+		DA1732E62623FE35001FC12C /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA1732E52623FE35001FC12C /* Image.cpp */; };
 		DA1CD04D25E73D9600DF3D45 /* ConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA1CD04825E73D9500DF3D45 /* ConfigViewController.m */; };
 		DA4B102125FED16700C986CD /* CameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4B102025FED16700C986CD /* CameraController.m */; };
 		DA4B102B25FF077500C986CD /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4B102A25FF077500C986CD /* Constants.m */; };
@@ -28,6 +30,10 @@
 		1397D6D4FE61BD0B1B9A06B5 /* libPods-DroneClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DroneClient.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		431D366987ECAD7A75FE2059 /* Pods-DroneClient.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DroneClient.release.xcconfig"; path = "Target Support Files/Pods-DroneClient/Pods-DroneClient.release.xcconfig"; sourceTree = "<group>"; };
 		721395ADF1AB4876BF61DD4A /* Pods-DroneClient.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DroneClient.debug.xcconfig"; path = "Target Support Files/Pods-DroneClient/Pods-DroneClient.debug.xcconfig"; sourceTree = "<group>"; };
+		DA1732DB2623F8D3001FC12C /* ImageUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageUtils.h; sourceTree = "<group>"; };
+		DA1732DC2623F8E8001FC12C /* ImageUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageUtils.m; sourceTree = "<group>"; };
+		DA1732E52623FE35001FC12C /* Image.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Image.cpp; sourceTree = "<group>"; };
+		DA1732E82623FE41001FC12C /* Image.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Image.hpp; sourceTree = "<group>"; };
 		DA1CD04825E73D9500DF3D45 /* ConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigViewController.m; sourceTree = "<group>"; };
 		DA1CD04925E73D9500DF3D45 /* ConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigViewController.h; sourceTree = "<group>"; };
 		DA4B102025FED16700C986CD /* CameraController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CameraController.m; sourceTree = "<group>"; };
@@ -112,12 +118,16 @@
 				DA7363BB25E73C3700057830 /* SceneDelegate.m */,
 				DA4B102325FED19600C986CD /* CameraController.h */,
 				DA4B102025FED16700C986CD /* CameraController.m */,
+				DA1732DB2623F8D3001FC12C /* ImageUtils.h */,
+				DA1732DC2623F8E8001FC12C /* ImageUtils.m */,
+				DA1732E52623FE35001FC12C /* Image.cpp */,
+				DA1732E82623FE41001FC12C /* Image.hpp */,
 				DA77B7E925E7491600F2AC99 /* ConnectionController.h */,
+				DA77B7EA25E7491600F2AC99 /* ConnectionController.mm */,
 				DAEED9F3261D8CC700469295 /* VideoPreviewerSDKAdapter.h */,
 				DAEED9F4261D8D3900469295 /* VideoPreviewerSDKAdapter.m */,
 				DAEED9F7261D8D8800469295 /* DJIDecodeImageCalibrateControlLogic.h */,
 				DAEED9F8261D8DB200469295 /* DJIDecodeImageCalibrateControlLogic.m */,
-				DA77B7EA25E7491600F2AC99 /* ConnectionController.mm */,
 				DA627B75261515350016323F /* DJIUtils.m */,
 				DA627B78261515530016323F /* DJIUtils.h */,
 				DA7363C025E73C3700057830 /* Main.storyboard */,
@@ -253,8 +263,10 @@
 				DAEED9F5261D8D3900469295 /* VideoPreviewerSDKAdapter.m in Sources */,
 				DA1CD04D25E73D9600DF3D45 /* ConfigViewController.m in Sources */,
 				DA7363B925E73C3700057830 /* AppDelegate.m in Sources */,
+				DA1732DD2623F8E8001FC12C /* ImageUtils.m in Sources */,
 				DA7363CA25E73C3A00057830 /* main.m in Sources */,
 				DA7363BC25E73C3700057830 /* SceneDelegate.m in Sources */,
+				DA1732E62623FE35001FC12C /* Image.cpp in Sources */,
 				DAEED9F9261D8DB200469295 /* DJIDecodeImageCalibrateControlLogic.m in Sources */,
 				DA627B82261545DF0016323F /* DroneComms.cpp in Sources */,
 				DA4B102125FED16700C986CD /* CameraController.m in Sources */,
