@@ -69,6 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UILabel *aircraftLocationState;
 @property (weak, nonatomic) IBOutlet UIButton *debugButton;
 
+
 @property(nonatomic) VideoPreviewerSDKAdapter *previewerAdapter;
 @property(atomic) CVPixelBufferRef currentPixelBuffer;
 

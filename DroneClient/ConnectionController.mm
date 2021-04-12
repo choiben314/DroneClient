@@ -11,7 +11,7 @@
 #import "DroneComms.hpp"
 #import "VideoPreviewerSDKAdapter.h"
 
-@interface ConnectionController ()<DJISDKManagerDelegate, DJICameraDelegate, DJIBatteryDelegate, DJIBatteryAggregationDelegate, DJIFlightControllerDelegate, NSStreamDelegate, DJIVideoFeedListener>
+@interface ConnectionController ()<DJISDKManagerDelegate, DJICameraDelegate, DJIBatteryDelegate, DJIBatteryAggregationDelegate, DJIFlightControllerDelegate, NSStreamDelegate, DJIVideoFeedListener, VideoFrameProcessor>
 
 @end
 
@@ -20,11 +20,13 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    [self registerApp];
     [self configureConnectionToProduct];
 //    UIView *newView = [[UIView alloc] initWithFrame:CGRectMake(0,0,1280,720)];
-    [[DJIVideoPreviewer instance] setView:self.fpvPreviewView];
+//    [[DJIVideoPreviewer instance] setView:self.fpvPreviewView];
     NSLog(@"debug: width %f", self.fpvPreviewView.frame.size.width);
     NSLog(@"debug: height %f", self.fpvPreviewView.frame.size.height);
+//    UIView *newView = [[UIView alloc] initWithFrame:CGRectMake(0,0,1280,720)];
 //    [[DJIVideoPreviewer instance] setView:newView];
 //    [self.fpvPreviewView addSubview:newView];
 }
@@ -32,8 +34,12 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [[DJIVideoPreviewer instance] setView:nil];
-    [[DJISDKManager videoFeeder].primaryVideoFeed removeListener:self];
+    [[DJIVideoPreviewer instance] unSetView];
+           
+    if (self.previewerAdapter) {
+        [self.previewerAdapter stop];
+        self.previewerAdapter = nil;
+    }
 }
 
 - (void)viewDidLoad {
@@ -124,7 +130,8 @@
 }
 
 - (IBAction)sendDebugMessage:(id)sender {
-    [self sendPacket_CoreTelemetry];
+//    [self sendPacket_CoreTelemetry];
+    [self showCurrentFrameImage];
 }
 
 - (void) messageReceived:(NSString *)message {
@@ -238,27 +245,46 @@
 - (void) configureConnectionToProduct {
     _uavConnectionStatusLabel.text = @"UAV Status: Connecting...";
 #if ENABLE_DEBUG_MODE
-    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"10.0.0.76"];
+//    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"10.0.0.76"];
 #else
     [DJISDKManager startConnectionToProduct];
 #endif
-    [[DJISDKManager videoFeeder].primaryVideoFeed addListener:self withQueue:nil];
+    [DJISDKManager startConnectionToProduct];
+//    [[DJISDKManager videoFeeder].primaryVideoFeed addListener:self withQueue:nil];
+//    [DJISDKManager startConnectionToProduct];
+    
 //    [[DJIVideoPreviewer instance] registFrameProcessor:self];
 //    [[DJIVideoPreviewer instance] setEnableHardwareDecode:true];
 //    [[DJIVideoPreviewer instance] setEnableFastUpload:true];
-//    self.previewerAdapter = [VideoPreviewerSDKAdapter adapterWithDefaultSettings];
-//    [self.previewerAdapter start];
-//    [[DJIVideoPreviewer instance] registFrameProcessor:self];
 //    [[DJIVideoPreviewer instance] setEnableHardwareDecode:true];
 //    [[DJIVideoPreviewer instance] setEnableFastUpload:true];
 //    [[DJIVideoPreviewer instance] setEncoderType:H264EncoderType_H1_Inspire2];
 //    [[DJIVideoPreviewer instance] setType:DJIVideoPreviewerTypeNone];
 //
+//
     [[DJIVideoPreviewer instance] start];
+    self.previewerAdapter = [VideoPreviewerSDKAdapter adapterWithDefaultSettings];
+    [self.previewerAdapter start];
+    [[DJIVideoPreviewer instance] registFrameProcessor:self];
+    [[DJIVideoPreviewer instance] setEnableHardwareDecode:true];
 }
 //
-//- (void) videoProcessFrame:(VideoFrameYUV *)frame {
-//    if ((frame->cv_pixelbuffer_fastupload != nil)) {
+- (void) videoProcessFrame:(VideoFrameYUV *)frame {
+    if ([DJIVideoPreviewer instance].enableHardwareDecode) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _batteryOneState.text = @"SDLKFJSDLJKF";
+        });
+    }
+    if ((frame->cv_pixelbuffer_fastupload != nil)) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _batteryTwoState.text = @"REEEE";
+        });
+        CVPixelBufferRef pixelBuffer = (CVPixelBufferRef) frame->cv_pixelbuffer_fastupload;
+        if (self->_currentPixelBuffer) {
+            CVPixelBufferRelease(self->_currentPixelBuffer);
+        }
+        self->_currentPixelBuffer = pixelBuffer;
+        CVPixelBufferRetain(pixelBuffer);
 //        NSLog(@"HELLOHELLO");
 //        CVPixelBufferRef pixelBuffer = (CVPixelBufferRef) frame->cv_pixelbuffer_fastupload;
 ////        if (*self->_pixelBuffer) {
@@ -266,24 +292,23 @@
 ////        }
 //        *self->_pixelBuffer = pixelBuffer;
 ////        CVPixelBufferRetain(pixelBuffer);
-//        
-//        UIImage *frame = [self imageFromPixelBuffer:*self->_pixelBuffer];
-////
-////        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-////        NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"Image.png"];
-////
-////        [UIImagePNGRepresentation(frame) writeToFile:filePath atomically:YES];
-//    } else {
-//        NSLog(@"SADSAD");
-//    }
-////    dispatch_async(dispatch_get_main_queue(), ^{
-////        self.showImageButton.enabled = self->_pixelBuffer != nil;
-////    });
-//}
 //
-//- (BOOL)videoProcessorEnabled {
-//    return YES;
-//}
+//        UIImage *frame = [self imageFromPixelBuffer:*self->_pixelBuffer];
+//
+//        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//        NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"Image.png"];
+//
+//        [UIImagePNGRepresentation(frame) writeToFile:filePath atomically:YES];
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _aircraftLocationState.text = @"REEEE123123";
+        });
+    }
+}
+
+- (BOOL)videoProcessorEnabled {
+    return YES;
+}
 
 - (UIImage *)imageFromPixelBuffer:(CVPixelBufferRef)pixelBufferRef {
     CVImageBufferRef imageBuffer =  pixelBufferRef;
@@ -298,6 +323,23 @@
     UIImage *result = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return result;
+}
+
+- (void)showCurrentFrameImage {
+    CVPixelBufferRef pixelBuffer;
+    if (self->_currentPixelBuffer) {
+        pixelBuffer = self->_currentPixelBuffer;
+        UIImage* image = [self imageFromPixelBuffer:pixelBuffer];
+        if (image) {
+//            NSLog(@"Height: %.2f, Width: %.2f", image.size.height, image.size.width);
+//            UIView *newView = [[UIView alloc] initWithFrame:CGRectMake(0,0,1280,720)];
+            UIImageView* imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, image.size.width, image.size.height)];
+            imgView.image = image;
+//            [newView addSubview:imgview];
+            [self.fpvPreviewView addSubview:imgView];
+            _aircraftLocationState.text = [NSString stringWithFormat:@"Height: %.2f, Width: %.2f", image.size.height, image.size.width];
+        }
+    }
 }
 
 #pragma mark DJISDKManagerDelegate Method
@@ -336,11 +378,30 @@
     _uavConnectionStatusLabel.text = @"UAV Status: Not Connected";
 }
 
+- (void)registerApp
+{
+   [DJISDKManager registerAppWithDelegate:self];
+}
+
+- (void)appRegisteredWithError:(NSError *)error
+{
+    NSString* message;
+    if (error) {
+        message = @"Register App Failed! Please enter your App Key in the plist file and check the network.";
+//        _registrationStatusLabel.text = @"Registration Status: FAILED";
+        
+    } else {
+        message = @"App successfully registered";
+//        _registrationStatusLabel.text = @"Registration Status: SUCCESS";
+    }
+    NSLog(@"%@", message);
+}
+
 #pragma mark - DJIVideoFeedListener
 
--(void)videoFeed:(DJIVideoFeed *)videoFeed didUpdateVideoData:(NSData *)videoData {
-    [[DJIVideoPreviewer instance] push:(uint8_t *)videoData.bytes length:(int)videoData.length];
-}
+//-(void)videoFeed:(DJIVideoFeed *)videoFeed didUpdateVideoData:(NSData *)videoData {
+//    [[DJIVideoPreviewer instance] push:(uint8_t *)videoData.bytes length:(int)videoData.length];
+//}
 
 #pragma mark - DJICameraDelegate
 

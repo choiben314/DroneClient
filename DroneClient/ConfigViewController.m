@@ -18,30 +18,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self registerApp];
     
     UITapGestureRecognizer *tapGestureRecognizer=[[UITapGestureRecognizer alloc] initWithTarget:self.view action:@selector(endEditing:)];
     [tapGestureRecognizer setCancelsTouchesInView:NO];
     [self.view addGestureRecognizer:tapGestureRecognizer];
-}
-
-- (void)registerApp
-{
-   [DJISDKManager registerAppWithDelegate:self];
-}
-
-- (void)appRegisteredWithError:(NSError *)error
-{
-    NSString* message;
-    if (error) {
-        message = @"Register App Failed! Please enter your App Key in the plist file and check the network.";
-        _registrationStatusLabel.text = @"Registration Status: FAILED";
-        
-    } else {
-        message = @"App successfully registered";
-        _registrationStatusLabel.text = @"Registration Status: SUCCESS";
-    }
-    NSLog(@"%@", message);
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
