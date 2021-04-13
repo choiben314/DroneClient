@@ -47,10 +47,21 @@
 - (void) sendPacket:(DroneInterface::Packet *)packet {
     NSData *data = [[NSData alloc] initWithBytesNoCopy:packet->m_data.data() length:packet->m_data.size() freeWhenDone:false];
     const unsigned char *bytes= (const unsigned char *)(data.bytes);
-    int ret_value = [outputStream write:bytes maxLength:[data length]];
-    _batteryOneState.text = [NSString stringWithFormat:@"Ret value: %d", ret_value];
-    int ret_value_2 = [outputStream write:bytes maxLength:[data length]];
-    _batteryTwoState.text = [NSString stringWithFormat:@"Ret value: %d", ret_value_2];
+    
+    unsigned int bytes_written = 0;
+    while (bytes_written != packet->m_data.size()) {
+        int remaining = data.length - bytes_written;
+        const unsigned char *bytesNew = bytes + bytes_written;
+        bytes_written += [outputStream write:bytesNew maxLength:remaining];
+        
+        [NSThread sleepForTimeInterval: 1];
+
+    }
+    
+//    int ret_value = [outputStream write:bytes maxLength:[data length]];
+//    _batteryOneState.text = [NSString stringWithFormat:@"Ret value: %d", ret_value];
+//    int ret_value_2 = [outputStream write:bytes maxLength:[data length]];
+//    _batteryTwoState.text = [NSString stringWithFormat:@"Ret value: %d", ret_value_2];
 }
 
 - (void) sendPacket_CoreTelemetry {
@@ -101,15 +112,20 @@
     
 //    [self showCurrentFrameImage];
     
-    CVPixelBufferRef pixelBuffer;
-    if (self->_currentPixelBuffer) {
-        pixelBuffer = self->_currentPixelBuffer;
-        UIImage* image = [self imageFromPixelBuffer:pixelBuffer];
-        packet_image.TargetFPS = [DJIVideoPreviewer instance].currentStreamInfo.frameRate;
-        unsigned char *bitmap = [ImageUtils convertUIImageToBitmapRGBA8:image];
-        packet_image.Frame = new Image(bitmap, 200, 200, 4);
-        // 17 + rows * cols * 3
-    }
+//    CVPixelBufferRef pixelBuffer;
+//    if (self->_currentPixelBuffer) {
+//        pixelBuffer = self->_currentPixelBuffer;
+//        UIImage* image = [self imageFromPixelBuffer:pixelBuffer];
+//        packet_image.TargetFPS = [DJIVideoPreviewer instance].currentStreamInfo.frameRate;
+//        unsigned char *bitmap = [ImageUtils convertUIImageToBitmapRGBA8:image];
+//        packet_image.Frame = new Image(bitmap, 250, 250, 4);
+//        // 17 + rows * cols * 3
+//    }
+//
+    
+    packet_image.TargetFPS = 30;
+    unsigned char *bitmap;
+    packet_image.Frame = new Image(bitmap, 720, 1280, 4);
     
 //    _batteryOneState.text = @"START SERIALIZING";
     packet_image.Serialize(packet);
@@ -262,7 +278,7 @@
 - (void) configureConnectionToProduct {
     _uavConnectionStatusLabel.text = @"UAV Status: Connecting...";
 #if ENABLE_DEBUG_MODE
-//    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"192.168.43.110"];
+    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"192.168.43.110"];
 //    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"10.0.0.76"];
 #else
     [DJISDKManager startConnectionToProduct];

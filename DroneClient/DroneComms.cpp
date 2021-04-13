@@ -59,12 +59,12 @@ static void encodeField_Image (std::vector<uint8_t> & Buffer, const Image * x) {
     int buffer_length = x->rows * x->cols * x->size_pixel;
     
     for (int i = 0; i < buffer_length; i += x->size_pixel) {
-//        encodeField_uint8(Buffer, (uint8_t) 255);
-//        encodeField_uint8(Buffer, (uint8_t) 0);
-//        encodeField_uint8(Buffer, (uint8_t) 0);
-        encodeField_uint8(Buffer, (uint8_t) x->bitmap[i]);
-        encodeField_uint8(Buffer, (uint8_t) x->bitmap[i + 1]);
-        encodeField_uint8(Buffer, (uint8_t) x->bitmap[i + 2]);
+        encodeField_uint8(Buffer, (uint8_t) 255);
+        encodeField_uint8(Buffer, (uint8_t) 0);
+        encodeField_uint8(Buffer, (uint8_t) 0);
+//        encodeField_uint8(Buffer, (uint8_t) x->bitmap[i]);
+//        encodeField_uint8(Buffer, (uint8_t) x->bitmap[i + 1]);
+//        encodeField_uint8(Buffer, (uint8_t) x->bitmap[i + 2]);
     }
 //	for (int row = 0; row < x.rows; row++) {
 //		for (int col = 0; col < x.cols; col++) {
