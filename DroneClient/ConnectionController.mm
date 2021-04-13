@@ -48,6 +48,7 @@
     NSData *data = [[NSData alloc] initWithBytesNoCopy:packet->m_data.data() length:packet->m_data.size() freeWhenDone:false];
     const unsigned char *bytes= (const unsigned char *)(data.bytes);
     [outputStream write:bytes maxLength:[data length]];
+    [outputStream write:bytes maxLength:[data length]];
 }
 
 - (void) sendPacket_CoreTelemetry {
@@ -104,15 +105,15 @@
         UIImage* image = [self imageFromPixelBuffer:pixelBuffer];
         packet_image.TargetFPS = [DJIVideoPreviewer instance].currentStreamInfo.frameRate;
         unsigned char *bitmap = [ImageUtils convertUIImageToBitmapRGBA8:image];
-        packet_image.Frame = new Image(bitmap, 100, 100, 4);
+        packet_image.Frame = new Image(bitmap, 200, 200, 4);
+        // 17 + rows * cols * 3
     }
     
     _batteryOneState.text = @"START SERIALIZING";
     packet_image.Serialize(packet);
-    _aircraftLocationState.text = [NSString stringWithFormat:@"DONE SERIALIZING %f", packet.m_data.size()];
+    _aircraftLocationState.text = [NSString stringWithFormat:@"DONE SERIALIZING %f", packet.m_size];
     
     [self sendPacket:&packet];
-//    [self sendPacket:&packet];
 }
 
 - (void) sendPacket_Acknowledgment:(BOOL) positive withPID:(UInt8)source_pid {
@@ -141,11 +142,11 @@
 }
 
 - (IBAction)sendDebugMessage:(id)sender {
-//        [self sendPacket_CoreTelemetry];
-    //    [self sendPacket_ExtendedTelemetry];
-        [self sendPacket_Image];
-//        [self sendPacket_Acknowledgment:YES withPID:4];
-//        [self sendPacket_MessageString: @"Testing the message string..." ofType: 2];
+    [self sendPacket_CoreTelemetry];
+    [self sendPacket_ExtendedTelemetry];
+    [self sendPacket_Image];
+    [self sendPacket_Acknowledgment:YES withPID:4];
+    [self sendPacket_MessageString: @"Testing the message string..." ofType: 2];
 }
 
 - (void) messageReceived:(NSString *)message {

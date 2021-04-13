@@ -32,11 +32,11 @@ namespace DroneInterface {
 			bool GetPID(uint8_t & PID) const; //Returns false if not enough data to decode PID
 			bool CheckHash(void) const; //Returns true if m_data passes hash check and false otherwise
 			bool CheckHashSizeAndPID(uint8_t PID) const; //Returns true if PID matches, size matches advertised size, and hash is good.
-			
+            uint32_t m_size; //Only valid when M_highLevelFieldsValid = true
 		private:
 			//These fields used only for IsFinished() and BytesNeeded()
 			bool     M_highLevelFieldsValid = false;
-			uint32_t m_size; //Only valid when M_highLevelFieldsValid = true
+			
 			uint8_t  m_PID;  //Only valid when M_highLevelFieldsValid = true
 	};
 	
