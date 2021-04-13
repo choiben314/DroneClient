@@ -104,10 +104,25 @@
         UIImage* image = [self imageFromPixelBuffer:pixelBuffer];
         packet_image.TargetFPS = [DJIVideoPreviewer instance].currentStreamInfo.frameRate;
         unsigned char *bitmap = [ImageUtils convertUIImageToBitmapRGBA8:image];
-        packet_image.Frame = new Image(bitmap, image.size.height, image.size.width, 4);
+        packet_image.Frame = new Image(bitmap, 100, 100, 4);
     }
     
+    _batteryOneState.text = @"START SERIALIZING";
     packet_image.Serialize(packet);
+    _aircraftLocationState.text = [NSString stringWithFormat:@"DONE SERIALIZING %f", packet.m_data.size()];
+    
+    [self sendPacket:&packet];
+//    [self sendPacket:&packet];
+}
+
+- (void) sendPacket_Acknowledgment:(BOOL) positive withPID:(UInt8)source_pid {
+    DroneInterface::Packet_Acknowledgment packet_acknowledgment;
+    DroneInterface::Packet packet;
+    
+    packet_acknowledgment.Positive = positive ? 1 : 0;
+    packet_acknowledgment.SourcePID = source_pid;
+    
+    packet_acknowledgment.Serialize(packet);
     
     [self sendPacket:&packet];
 }
@@ -126,10 +141,11 @@
 }
 
 - (IBAction)sendDebugMessage:(id)sender {
-//    [self sendPacket_MessageString: @"Testing the message string..." ofType: 2];
-    [self sendPacket_ExtendedTelemetry];
-//    [self showCurrentFrameImage];
-//    [self sendPacket_Image];
+//        [self sendPacket_CoreTelemetry];
+    //    [self sendPacket_ExtendedTelemetry];
+        [self sendPacket_Image];
+//        [self sendPacket_Acknowledgment:YES withPID:4];
+//        [self sendPacket_MessageString: @"Testing the message string..." ofType: 2];
 }
 
 - (void) messageReceived:(NSString *)message {
@@ -243,7 +259,8 @@
 - (void) configureConnectionToProduct {
     _uavConnectionStatusLabel.text = @"UAV Status: Connecting...";
 #if ENABLE_DEBUG_MODE
-    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"192.168.43.110"];
+//    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"192.168.43.110"];
+//    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"10.0.0.76"];
 #else
     [DJISDKManager startConnectionToProduct];
 #endif
@@ -297,7 +314,7 @@
             UIImageView* imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, image.size.width, image.size.height)];
             imgView.image = image;
             [self.fpvPreviewView addSubview:imgView];
-            _aircraftLocationState.text = [NSString stringWithFormat:@"Height: %.2f, Width: %.2f", image.size.height, image.size.width];
+//            _aircraftLocationState.text = [NSString stringWithFormat:@"Height: %.2f, Width: %.2f", image.size.height, image.size.width];
         }
     }
 }

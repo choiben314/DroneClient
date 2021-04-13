@@ -59,6 +59,9 @@ static void encodeField_Image (std::vector<uint8_t> & Buffer, const Image * x) {
     int buffer_length = x->rows * x->cols * x->size_pixel;
     
     for (int i = 0; i < buffer_length; i += x->size_pixel) {
+//        encodeField_uint8(Buffer, (uint8_t) 255);
+//        encodeField_uint8(Buffer, (uint8_t) 0);
+//        encodeField_uint8(Buffer, (uint8_t) 0);
         encodeField_uint8(Buffer, (uint8_t) x->bitmap[i]);
         encodeField_uint8(Buffer, (uint8_t) x->bitmap[i + 1]);
         encodeField_uint8(Buffer, (uint8_t) x->bitmap[i + 2]);
@@ -383,11 +386,11 @@ namespace DroneInterface {
 //	}
 //
 	void Packet_Image::Serialize(Packet & TargetPacket) const {
-//		TargetPacket.Clear();
-//		TargetPacket.AddHeader(uint32_t(9U + 4U + 4U + (unsigned int)(Frame.rows*Frame.cols*3)), uint8_t(2U));
-//		encodeField_float32(TargetPacket.m_data, TargetFPS);
-//		encodeField_Image  (TargetPacket.m_data, Frame);
-//		TargetPacket.AddHash();
+		TargetPacket.Clear();
+		TargetPacket.AddHeader(uint32_t(9U + 4U + 4U + (unsigned int)(Frame->rows * Frame->cols * 3)), uint8_t(2U));
+		encodeField_float32(TargetPacket.m_data, TargetFPS);
+		encodeField_Image  (TargetPacket.m_data, Frame);
+		TargetPacket.AddHash();
 	}
 
 	// ****************************************************************************************************************************************
