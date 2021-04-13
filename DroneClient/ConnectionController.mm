@@ -47,8 +47,10 @@
 - (void) sendPacket:(DroneInterface::Packet *)packet {
     NSData *data = [[NSData alloc] initWithBytesNoCopy:packet->m_data.data() length:packet->m_data.size() freeWhenDone:false];
     const unsigned char *bytes= (const unsigned char *)(data.bytes);
-    [outputStream write:bytes maxLength:[data length]];
-    [outputStream write:bytes maxLength:[data length]];
+    int ret_value = [outputStream write:bytes maxLength:[data length]];
+    _batteryOneState.text = [NSString stringWithFormat:@"Ret value: %d", ret_value];
+    int ret_value_2 = [outputStream write:bytes maxLength:[data length]];
+    _batteryTwoState.text = [NSString stringWithFormat:@"Ret value: %d", ret_value_2];
 }
 
 - (void) sendPacket_CoreTelemetry {
@@ -97,7 +99,7 @@
     DroneInterface::Packet_Image packet_image;
     DroneInterface::Packet packet;
     
-    [self showCurrentFrameImage];
+//    [self showCurrentFrameImage];
     
     CVPixelBufferRef pixelBuffer;
     if (self->_currentPixelBuffer) {
@@ -109,9 +111,9 @@
         // 17 + rows * cols * 3
     }
     
-    _batteryOneState.text = @"START SERIALIZING";
+//    _batteryOneState.text = @"START SERIALIZING";
     packet_image.Serialize(packet);
-    _aircraftLocationState.text = [NSString stringWithFormat:@"DONE SERIALIZING %f", packet.m_size];
+    _aircraftLocationState.text = [NSString stringWithFormat:@"DONE SERIALIZING %u", packet.m_size];
     
     [self sendPacket:&packet];
 }
@@ -142,11 +144,11 @@
 }
 
 - (IBAction)sendDebugMessage:(id)sender {
-    [self sendPacket_CoreTelemetry];
-    [self sendPacket_ExtendedTelemetry];
+//    [self sendPacket_CoreTelemetry];
+//    [self sendPacket_ExtendedTelemetry];
     [self sendPacket_Image];
-    [self sendPacket_Acknowledgment:YES withPID:4];
-    [self sendPacket_MessageString: @"Testing the message string..." ofType: 2];
+//    [self sendPacket_Acknowledgment:YES withPID:4];
+//    [self sendPacket_MessageString: @"Testing the message string..." ofType: 2];
 }
 
 - (void) messageReceived:(NSString *)message {
