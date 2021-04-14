@@ -64,6 +64,8 @@ NS_ASSUME_NONNULL_BEGIN
     
     int _frame_count;
     float _target_fps;
+    NSDate* _time_of_last_virtual_stick_command;
+    float _virtual_stick_command_timeout;
 }
 @property (nonatomic, strong) DJICamera* camera;
 @property (weak, nonatomic) IBOutlet UIView *fpvPreviewView;

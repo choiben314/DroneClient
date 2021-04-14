@@ -197,9 +197,9 @@
                     [self sendPacket_Acknowledgment:1 withPID:PID];
                     
                     if (packet_cc->Action == 0) { // stop live feed
-                        self->_dji_cam == 1;
+                        self->_dji_cam = 1;
                     } else if (packet_cc->Action == 1) { // start live feed
-                        self->_dji_cam == 2;
+                        self->_dji_cam = 2;
                         self->_target_fps = packet_cc->TargetFPS;
                     }
                 } else {
@@ -231,6 +231,28 @@
                 if (packet_vsc->Deserialize(*packet_fragment)) {
                     NSLog(@"Successfully deserialized Virtual Stick Command packet.");
                     [self sendPacket_Acknowledgment:1 withPID:PID];
+                    
+                    [self stopDJIWaypointMission];
+                    
+                    if (packet_vsc->Mode == 0) {
+                        struct DroneInterface::VirtualStickCommand_ModeA* command;
+                        command->Yaw = packet_vsc->Yaw;
+                        command->V_North = packet_vsc->V_x;
+                        command->V_East = packet_vsc->V_y;
+                        command->HAG = packet_vsc->HAG;
+                        command->timeout = packet_vsc->timeout;
+                        [self executeVirtualStickCommand_ModeA:command];
+                    } else if (packet_vsc->Mode == 1) {
+                        struct DroneInterface::VirtualStickCommand_ModeB* command;
+                        command->Yaw = packet_vsc->Yaw;
+                        command->V_Forward = packet_vsc->V_x;
+                        command->V_Right = packet_vsc->V_y;
+                        command->HAG = packet_vsc->HAG;
+                        command->timeout = packet_vsc->timeout;
+                        [self executeVirtualStickCommand_ModeB:command];
+                    }
+                    
+                    self->_time_of_last_virtual_stick_command = [NSDate date];
                 } else {
                     NSLog(@"Error: Tried to deserialize invalid Virtual Stick Command packet.");
                     [self sendPacket_Acknowledgment:0 withPID:PID];
@@ -239,7 +261,6 @@
             }
         }
     }
-
 }
 
 - (void)stream:(NSStream *)theStream handleEvent:(NSStreamEvent)streamEvent {
@@ -358,6 +379,7 @@
     self->_frame_count = 0;
     self->_dji_cam = 2;
     self->_target_fps = 30;
+    self->_time_of_last_virtual_stick_command = [NSDate date];
 }
 
 - (void) videoProcessFrame:(VideoFrameYUV *)frame {
@@ -438,6 +460,15 @@
         [flightController getSerialNumberWithCompletion:^(NSString * serialNumber, NSError * error) {
             self->_drone_serial = serialNumber;
         }];
+        
+        [flightController setVirtualStickModeEnabled:TRUE
+                                      withCompletion:^(NSError * _Nullable error) {
+        
+        }];
+        
+        [[DJIUtils fetchFlightController] setVerticalControlMode:DJIVirtualStickVerticalControlModePosition];
+        [[DJIUtils fetchFlightController] setRollPitchControlMode:DJIVirtualStickRollPitchControlModeVelocity];
+        [[DJIUtils fetchFlightController] setYawControlMode:DJIVirtualStickYawControlModeAngle];
         
     }
     
@@ -560,10 +591,58 @@
 //    }
     self->_mission_id = 0;
     
+    double time_since_last_virtual_stick_command = [self->_time_of_last_virtual_stick_command timeIntervalSinceNow];
+    if (time_since_last_virtual_stick_command > self->_virtual_stick_command_timeout) {
+        struct DroneInterface::VirtualStickCommand_ModeA* command;
+        command->V_North = 0;
+        command->V_East = 0;
+        [self executeVirtualStickCommand_ModeA:command];
+    }
+    
 //    [self sendPacket_CoreTelemetry];
 //    [NSThread sleepForTimeInterval: 0.1];
 //    [self sendPacket_ExtendedTelemetry];
 //    [NSThread sleepForTimeInterval: 0.1];
+}
+
+- (void) executeVirtualStickCommand_ModeA: (DroneInterface::VirtualStickCommand_ModeA *) command {
+    DJIFlightController* fc = [DJIUtils fetchFlightController];
+    [fc setRollPitchCoordinateSystem:DJIVirtualStickFlightCoordinateSystemGround];
+    
+    DJIVirtualStickFlightControlData ctrlData;
+    ctrlData.yaw = command->Yaw;
+    ctrlData.roll = command->V_North;
+    ctrlData.pitch = command->V_East;
+    ctrlData.verticalThrottle = command->HAG;
+    
+    if (fc.isVirtualStickControlModeAvailable) {
+        [fc sendVirtualStickFlightControlData:ctrlData withCompletion:^(NSError * _Nullable error) {
+            
+        }];
+    } else {
+        //https://developer.dji.com/api-reference/ios-api/Components/FlightController/DJIFlightController.html#djiflightcontroller_virtualstickcontrolmodecategory_isvirtualstickcontrolmodeavailable_inline
+        NSLog(@"Virtual stick control mode is not available in the current flight conditions. See documentation for details.");
+    }
+}
+
+- (void) executeVirtualStickCommand_ModeB: (DroneInterface::VirtualStickCommand_ModeB *) command {
+    DJIFlightController* fc = [DJIUtils fetchFlightController];
+    [fc setRollPitchCoordinateSystem:DJIVirtualStickFlightCoordinateSystemBody];
+
+    DJIVirtualStickFlightControlData ctrlData;
+    ctrlData.yaw = command->Yaw;
+    ctrlData.roll = command->V_Forward;
+    ctrlData.pitch = command->V_Right;
+    ctrlData.verticalThrottle = command->HAG;
+    
+    if (fc.isVirtualStickControlModeAvailable) {
+        [fc sendVirtualStickFlightControlData:ctrlData withCompletion:^(NSError * _Nullable error) {
+            
+        }];
+    } else {
+        //https://developer.dji.com/api-reference/ios-api/Components/FlightController/DJIFlightController.html#djiflightcontroller_virtualstickcontrolmodecategory_isvirtualstickcontrolmodeavailable_inline
+        NSLog(@"Virtual stick control mode is not available in the current flight conditions. See documentation for details.");
+    }
 }
 
 #pragma mark - DJIMutableWaypointMission
