@@ -89,9 +89,9 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I5B-lh-Ydw">
-                                <rect key="frame" x="184" y="198" width="46" height="30"/>
+                                <rect key="frame" x="118" y="198" width="178" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
+                                <state key="normal" title="SEND DEBUG COMMAND"/>
                                 <connections>
                                     <action selector="sendDebugMessage:" destination="qop-Cj-Zlw" eventType="touchUpInside" id="tEe-Sg-g5q"/>
                                 </connections>

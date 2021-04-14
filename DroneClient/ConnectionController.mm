@@ -104,7 +104,8 @@
     DroneInterface::Packet_Image packet_image;
     DroneInterface::Packet packet;
     
-    [self showCurrentFrameImage];
+//    Uncomment below to show frame being sent in packet.
+//    [self showCurrentFrameImage];
     
     CVPixelBufferRef pixelBuffer;
     if (self->_currentPixelBuffer) {
@@ -145,32 +146,22 @@
     [self sendPacket: &packet];
 }
 
+// Executes when SEND DEBUG COMMAND button is pressed
 - (IBAction)sendDebugMessage:(id)sender {
 //    [self sendPacket_CoreTelemetry];
 //    [self sendPacket_ExtendedTelemetry];
-//    [self sendPacket_Image];
-//    [NSThread sleepForTimeInterval: 1];
 //    [self sendPacket_Image];
 //    [self sendPacket_Acknowledgment:YES withPID:4];
     [self sendPacket_MessageString: @"Testing the message string..." ofType: 2];
 }
 
 - (void) dataReceivedHandler:(uint8_t *)buffer bufferSize: (uint32_t) size withPacket: (DroneInterface::Packet*) packet_fragment {
-//    [messages addObject:message];
-//    NSLog(@"%@", message);
     
     unsigned int i = 0;
     while(!packet_fragment->IsFinished() && i < size) {
         packet_fragment->m_data.push_back(buffer[i++]);
     }
-//    uint32_t bytes_needed;
-//    packet_fragment->BytesNeeded(bytes_needed);
-//
-//    if (bytes_needed >= (uint32_t) size) {
-//        packet_fragment->m_data.insert(packet_fragment->m_data.end(), buffer, buffer + size);
-//    } else {
-//        packet_fragment->m_data.insert(packet_fragment->m_data.end(), buffer, buffer + bytes_needed);
-//    }
+
     if (packet_fragment->IsFinished()) {
         uint8_t PID;
         packet_fragment->GetPID(PID);
@@ -179,8 +170,50 @@
                 DroneInterface::Packet_EmergencyCommand* packet_ec = new DroneInterface::Packet_EmergencyCommand();
                 if (packet_ec->Deserialize(*packet_fragment)) {
                     NSLog(@"Successfully deserialized Emergency Command packet.");
+                    [self sendPacket_Acknowledgment:1 withPID:PID];
                 } else {
                     NSLog(@"Error: Tried to deserialize invalid Emergency Command packet.");
+                    [self sendPacket_Acknowledgment:0 withPID:PID];
+                }
+                break;
+            }
+            case 254U: {
+                DroneInterface::Packet_CameraControl* packet_cc = new DroneInterface::Packet_CameraControl();
+                if (packet_cc->Deserialize(*packet_fragment)) {
+                    NSLog(@"Successfully deserialized Camera Control packet.");
+                    [self sendPacket_Acknowledgment:1 withPID:PID];
+                    
+                    if (packet_cc->Action == 0) { // stop live feed
+                        self->_dji_cam == 1;
+                    } else if (packet_cc->Action == 1) { // start live feed
+                        self->_dji_cam == 2;
+                        self->_target_fps = packet_cc->TargetFPS;
+                    }
+                } else {
+                    NSLog(@"Error: Tried to deserialize invalid Camera Control packet.");
+                    [self sendPacket_Acknowledgment:0 withPID:PID];
+                }
+                break;
+            }
+            case 253U: {
+                DroneInterface::Packet_ExecuteWaypointMission* packet_ec = new DroneInterface::Packet_ExecuteWaypointMission();
+                if (packet_ec->Deserialize(*packet_fragment)) {
+                    NSLog(@"Successfully deserialized Execute Waypoint Mission packet.");
+                    [self sendPacket_Acknowledgment:1 withPID:PID];
+                } else {
+                    NSLog(@"Error: Tried to deserialize invalid Execute Waypoint Mission packet.");
+                    [self sendPacket_Acknowledgment:0 withPID:PID];
+                }
+                break;
+            }
+            case 252U: {
+                DroneInterface::Packet_VirtualStickCommand* packet_ec = new DroneInterface::Packet_VirtualStickCommand();
+                if (packet_ec->Deserialize(*packet_fragment)) {
+                    NSLog(@"Successfully deserialized Virtual Stick Command packet.");
+                    [self sendPacket_Acknowledgment:1 withPID:PID];
+                } else {
+                    NSLog(@"Error: Tried to deserialize invalid Virtual Stick Command packet.");
+                    [self sendPacket_Acknowledgment:0 withPID:PID];
                 }
                 break;
             }
@@ -210,19 +243,11 @@
                 DroneInterface::Packet* packet_fragment = new DroneInterface::Packet();
                 while ([inputStream hasBytesAvailable])
                 {
-                    NSLog(@"okokokhasbytesavailable");
                     len = [inputStream read:buffer maxLength:sizeof(buffer)];
                     if (len > 0)
                     {
+                        _serverConnectionStatusLabel.text = @"Server Status: Connected";
                         [self dataReceivedHandler:buffer bufferSize:1024 withPacket:packet_fragment];
-//                        NSString *output = [[NSString alloc] initWithBytes:buffer length:len encoding:NSASCIIStringEncoding];
-//
-//                        if (nil != output)
-//                        {
-//                            _serverConnectionStatusLabel.text = @"Server Status: Connected";
-//                            NSLog(@"server said: %@", output);
-//                            [self messageReceived:output];
-//                        }
                     }
                 }
             }
@@ -310,16 +335,26 @@
     [self.previewerAdapter start];
     [[DJIVideoPreviewer instance] registFrameProcessor:self];
     [[DJIVideoPreviewer instance] setEnableHardwareDecode:true];
+    self->_frame_count = 0;
+    self->_dji_cam = 2;
+    self->_target_fps = 30;
 }
 
 - (void) videoProcessFrame:(VideoFrameYUV *)frame {
-    if ((frame->cv_pixelbuffer_fastupload != nil)) {
-        CVPixelBufferRef pixelBuffer = (CVPixelBufferRef) frame->cv_pixelbuffer_fastupload;
-        if (self->_currentPixelBuffer) {
-            CVPixelBufferRelease(self->_currentPixelBuffer);
+    if (frame->cv_pixelbuffer_fastupload != nil) {
+        if (self->_dji_cam == 2 && (self->_frame_count % ((int) self->_target_fps) == 0)) {
+            CVPixelBufferRef pixelBuffer = (CVPixelBufferRef) frame->cv_pixelbuffer_fastupload;
+            if (self->_currentPixelBuffer) {
+                CVPixelBufferRelease(self->_currentPixelBuffer);
+            }
+            self->_currentPixelBuffer = pixelBuffer;
+            CVPixelBufferRetain(pixelBuffer);
+            
+            self->_frame_count = 0;
+            
+            [self sendPacket_Image];
         }
-        self->_currentPixelBuffer = pixelBuffer;
-        CVPixelBufferRetain(pixelBuffer);
+        self->_frame_count++;
     } else {
         self->_currentPixelBuffer = nil;
     }
@@ -353,7 +388,6 @@
             UIImageView* imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, image.size.width / 4, image.size.height / 4)];
             imgView.image = image;
             [self.fpvPreviewView addSubview:imgView];
-//            _aircraftLocationState.text = [NSString stringWithFormat:@"Height: %.2f, Width: %.2f", image.size.height, image.size.width];
         }
     }
 }
@@ -499,6 +533,10 @@
         self->_dji_cam = 0;
     }
     self->_mission_id = 0;
+    
+    [self sendPacket_CoreTelemetry];
+    [NSThread sleepForTimeInterval: 0.3];
+    [self sendPacket_ExtendedTelemetry];
 }
 
 @end

@@ -61,6 +61,9 @@ NS_ASSUME_NONNULL_BEGIN
     
     // Video
     CVPixelBufferRef *_pixelBuffer;
+    
+    int _frame_count;
+    float _target_fps;
 }
 @property (nonatomic, strong) DJICamera* camera;
 @property (weak, nonatomic) IBOutlet UIView *fpvPreviewView;
