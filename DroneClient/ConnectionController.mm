@@ -172,6 +172,18 @@
                 if (packet_ec->Deserialize(*packet_fragment)) {
                     NSLog(@"Successfully deserialized Emergency Command packet.");
                     [self sendPacket_Acknowledgment:1 withPID:PID];
+                    
+                    [self stopDJIWaypointMission];
+                    
+                    if (packet_ec->Action == 1) {
+                        [[DJIUtils fetchFlightController] startLandingWithCompletion:^(NSError * _Nullable error) {
+                        
+                        }];
+                    } else if (packet_ec->Action == 2) {
+                        [[DJIUtils fetchFlightController] startGoHomeWithCompletion:^(NSError * _Nullable error) {
+                        
+                        }];
+                    }
                 } else {
                     NSLog(@"Error: Tried to deserialize invalid Emergency Command packet.");
                     [self sendPacket_Acknowledgment:0 withPID:PID];
