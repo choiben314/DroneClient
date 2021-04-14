@@ -12,6 +12,7 @@
 #import "VideoPreviewerSDKAdapter.h"
 #import "ImageUtils.h"
 #import "Image.hpp"
+#import "Drone.hpp"
 
 @interface ConnectionController ()<DJISDKManagerDelegate, DJICameraDelegate, DJIBatteryDelegate, DJIBatteryAggregationDelegate, DJIFlightControllerDelegate, NSStreamDelegate, DJIVideoFeedListener, VideoFrameProcessor>
 
@@ -196,10 +197,17 @@
                 break;
             }
             case 253U: {
-                DroneInterface::Packet_ExecuteWaypointMission* packet_ec = new DroneInterface::Packet_ExecuteWaypointMission();
-                if (packet_ec->Deserialize(*packet_fragment)) {
+                DroneInterface::Packet_ExecuteWaypointMission* packet_ewm = new DroneInterface::Packet_ExecuteWaypointMission();
+                if (packet_ewm->Deserialize(*packet_fragment)) {
                     NSLog(@"Successfully deserialized Execute Waypoint Mission packet.");
                     [self sendPacket_Acknowledgment:1 withPID:PID];
+                    
+                    struct DroneInterface::WaypointMission* mission;
+                    mission->LandAtLastWaypoint = packet_ewm->LandAtEnd;
+                    mission->CurvedTrajectory = packet_ewm->CurvedFlight;
+                    mission->Waypoints = packet_ewm->Waypoints;
+                    
+                    [self executeDJIWaypointMission:mission];
                 } else {
                     NSLog(@"Error: Tried to deserialize invalid Execute Waypoint Mission packet.");
                     [self sendPacket_Acknowledgment:0 withPID:PID];
@@ -207,8 +215,8 @@
                 break;
             }
             case 252U: {
-                DroneInterface::Packet_VirtualStickCommand* packet_ec = new DroneInterface::Packet_VirtualStickCommand();
-                if (packet_ec->Deserialize(*packet_fragment)) {
+                DroneInterface::Packet_VirtualStickCommand* packet_vsc = new DroneInterface::Packet_VirtualStickCommand();
+                if (packet_vsc->Deserialize(*packet_fragment)) {
                     NSLog(@"Successfully deserialized Virtual Stick Command packet.");
                     [self sendPacket_Acknowledgment:1 withPID:PID];
                 } else {
@@ -544,6 +552,79 @@
 //    [NSThread sleepForTimeInterval: 0.1];
 //    [self sendPacket_ExtendedTelemetry];
 //    [NSThread sleepForTimeInterval: 0.1];
+}
+
+#pragma mark - DJIMutableWaypointMission
+- (void) createDJIWaypointMission: (DroneInterface::WaypointMission *) mission {
+    if (self->_waypointMission) {
+        [self->_waypointMission removeAllWaypoints];
+    } else {
+        self->_waypointMission = [[DJIMutableWaypointMission alloc] init];
+    }
+    
+    for (int i = 0; i < mission->Waypoints.size(); i++) {
+        CLLocation* location = [[CLLocation alloc] initWithLatitude:mission->Waypoints[i].Latitude longitude:mission->Waypoints[i].Longitude];
+        
+        if (CLLocationCoordinate2DIsValid(location.coordinate)) {
+            DJIWaypoint* waypoint = [[DJIWaypoint alloc] initWithCoordinate:location.coordinate];
+            waypoint.altitude = mission->Waypoints[i].Altitude;
+            waypoint.cornerRadiusInMeters = mission->Waypoints[i].CornerRadius;
+            waypoint.speed = mission->Waypoints[i].Speed;
+            if (!isnan(mission->Waypoints[i].LoiterTime)) {
+                [waypoint addAction:[[DJIWaypointAction alloc] initWithActionType:DJIWaypointActionTypeStay param:mission->Waypoints[i].LoiterTime]];
+            }
+            if (!isnan(mission->Waypoints[i].GimbalPitch)) {
+                [waypoint addAction:[[DJIWaypointAction alloc] initWithActionType:DJIWaypointActionTypeRotateGimbalPitch param:mission->Waypoints[i].GimbalPitch]];
+            }
+            [self->_waypointMission addWaypoint:waypoint];
+        } else {
+            [self sendPacket_MessageString:@"Invalid waypoint coordinate." ofType:3];
+        }
+    }
+    
+    if (mission->LandAtLastWaypoint == 1) {
+        self->_waypointMission.finishedAction = DJIWaypointMissionFinishedAutoLand;
+    } else {
+        self->_waypointMission.finishedAction = DJIWaypointMissionFinishedNoAction;
+    }
+    
+    if (mission->CurvedTrajectory == 1) {
+        self->_waypointMission.flightPathMode = DJIWaypointMissionFlightPathCurved;
+    } else {
+        self->_waypointMission.flightPathMode = DJIWaypointMissionFlightPathNormal;
+    }
+}
+
+- (DJIWaypointMissionOperator *)missionOperator {
+    return [DJISDKManager missionControl].waypointMissionOperator;
+}
+
+- (void) startDJIWaypointMission {
+    [[self missionOperator] startMissionWithCompletion:^(NSError * _Nullable error) {
+        
+    }];
+}
+
+- (void) stopDJIWaypointMission {
+    [[self missionOperator] stopMissionWithCompletion:^(NSError * _Nullable error) {
+        
+    }];
+}
+
+- (void) executeDJIWaypointMission: (DroneInterface::WaypointMission *) mission {
+    [self createDJIWaypointMission:mission];
+    
+    [[self missionOperator] loadMission: self->_waypointMission];
+    
+    // On mission upload
+    [[self missionOperator] uploadMissionWithCompletion:^(NSError * _Nullable error) {
+        [self startDJIWaypointMission];
+    }];
+    
+    // On mission finished
+    [[self missionOperator] addListenerToFinished:self withQueue:dispatch_get_main_queue() andBlock:^(NSError * _Nullable error) {
+
+    }];
 }
 
 @end

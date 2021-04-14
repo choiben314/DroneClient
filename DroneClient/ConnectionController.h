@@ -78,6 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic) VideoPreviewerSDKAdapter *previewerAdapter;
 @property(atomic) CVPixelBufferRef currentPixelBuffer;
+@property(nonatomic, strong) DJIMutableWaypointMission* waypointMission;
 
 @end
 
