@@ -324,7 +324,7 @@
     _uavConnectionStatusLabel.text = @"UAV Status: Connecting...";
 #if ENABLE_DEBUG_MODE
 //    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"192.168.43.110"];
-    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"10.0.0.76"];
+//    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"10.0.0.76"];
 #else
     [DJISDKManager startConnectionToProduct];
 #endif
@@ -350,9 +350,10 @@
             self->_currentPixelBuffer = pixelBuffer;
             CVPixelBufferRetain(pixelBuffer);
             
-            self->_frame_count = 0;
+            self->_frame_count = 1;
             
-            [self sendPacket_Image];
+//            [self sendPacket_MessageString:@"FRAME SENT" ofType:1]; // for checking frame timing
+//            [self sendPacket_Image];
         }
         self->_frame_count++;
     } else {
@@ -529,14 +530,20 @@
     self->_wind_level = [DJIUtils getWindLevel:[state windWarning]];
     self->_flight_mode = [DJIUtils getFlightMode:[state flightMode]];
 
-    if (!self->_camera.isConnected) {
-        self->_dji_cam = 0;
-    }
+// KNOWN BUG: Behavior leading to _dji_cam = 0 is currently undefined.
+//    if (!self->_camera.isConnected) {
+//        self->_dji_cam = 0;
+//    } else {
+//        if (self->_dji_cam == 0) {
+//            self ->_dji_cam = 2;
+//        }
+//    }
     self->_mission_id = 0;
     
-    [self sendPacket_CoreTelemetry];
-    [NSThread sleepForTimeInterval: 0.3];
-    [self sendPacket_ExtendedTelemetry];
+//    [self sendPacket_CoreTelemetry];
+//    [NSThread sleepForTimeInterval: 0.1];
+//    [self sendPacket_ExtendedTelemetry];
+//    [NSThread sleepForTimeInterval: 0.1];
 }
 
 @end
