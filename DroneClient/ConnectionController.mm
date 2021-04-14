@@ -54,13 +54,8 @@
         const unsigned char *bytesNew = bytes + bytes_written;
         bytes_written += [outputStream write:bytesNew maxLength:remaining];
         
-        [NSThread sleepForTimeInterval: 1];
+        [NSThread sleepForTimeInterval: 0.001];
     }
-    
-//    int ret_value = [outputStream write:bytes maxLength:[data length]];
-//    _batteryOneState.text = [NSString stringWithFormat:@"Ret value: %d", ret_value];
-//    int ret_value_2 = [outputStream write:bytes maxLength:[data length]];
-//    _batteryTwoState.text = [NSString stringWithFormat:@"Ret value: %d", ret_value_2];
 }
 
 - (void) sendPacket_CoreTelemetry {
@@ -117,15 +112,10 @@
         UIImage* image = [self imageFromPixelBuffer:pixelBuffer];
         packet_image.TargetFPS = [DJIVideoPreviewer instance].currentStreamInfo.frameRate;
         unsigned char *bitmap = [ImageUtils convertUIImageToBitmapRGBA8:image];
-        packet_image.Frame = new Image(bitmap, 720, 1280, 4);
-        if (bitmap == nil) {
-            _aircraftLocationState.text = @"NULLLL!!!!!";
-        }
+        packet_image.Frame = new Image(bitmap, image.size.height, image.size.width, 4);
     }
     
-//    _batteryOneState.text = @"START SERIALIZING";
     packet_image.Serialize(packet);
-//    _aircraftLocationState.text = [NSString stringWithFormat:@"DONE SERIALIZING %u", packet.m_size];
     
     [self sendPacket:&packet];
 }
@@ -158,14 +148,45 @@
 - (IBAction)sendDebugMessage:(id)sender {
 //    [self sendPacket_CoreTelemetry];
 //    [self sendPacket_ExtendedTelemetry];
-    [self sendPacket_Image];
+//    [self sendPacket_Image];
+//    [NSThread sleepForTimeInterval: 1];
+//    [self sendPacket_Image];
 //    [self sendPacket_Acknowledgment:YES withPID:4];
-//    [self sendPacket_MessageString: @"Testing the message string..." ofType: 2];
+    [self sendPacket_MessageString: @"Testing the message string..." ofType: 2];
 }
 
-- (void) messageReceived:(NSString *)message {
-    [messages addObject:message];
-    NSLog(@"%@", message);
+- (void) dataReceivedHandler:(uint8_t *)buffer bufferSize: (uint32_t) size withPacket: (DroneInterface::Packet*) packet_fragment {
+//    [messages addObject:message];
+//    NSLog(@"%@", message);
+    
+    unsigned int i = 0;
+    while(!packet_fragment->IsFinished() && i < size) {
+        packet_fragment->m_data.push_back(buffer[i++]);
+    }
+//    uint32_t bytes_needed;
+//    packet_fragment->BytesNeeded(bytes_needed);
+//
+//    if (bytes_needed >= (uint32_t) size) {
+//        packet_fragment->m_data.insert(packet_fragment->m_data.end(), buffer, buffer + size);
+//    } else {
+//        packet_fragment->m_data.insert(packet_fragment->m_data.end(), buffer, buffer + bytes_needed);
+//    }
+    if (packet_fragment->IsFinished()) {
+        uint8_t PID;
+        packet_fragment->GetPID(PID);
+        switch(PID) {
+            case 255U: {
+                DroneInterface::Packet_EmergencyCommand* packet_ec = new DroneInterface::Packet_EmergencyCommand();
+                if (packet_ec->Deserialize(*packet_fragment)) {
+                    NSLog(@"Successfully deserialized Emergency Command packet.");
+                } else {
+                    NSLog(@"Error: Tried to deserialize invalid Emergency Command packet.");
+                }
+                break;
+            }
+        }
+    }
+
 }
 
 - (void)stream:(NSStream *)theStream handleEvent:(NSStreamEvent)streamEvent {
@@ -186,19 +207,22 @@
                 uint8_t buffer[1024];
                 NSInteger len;
 
+                DroneInterface::Packet* packet_fragment = new DroneInterface::Packet();
                 while ([inputStream hasBytesAvailable])
                 {
+                    NSLog(@"okokokhasbytesavailable");
                     len = [inputStream read:buffer maxLength:sizeof(buffer)];
                     if (len > 0)
                     {
-                        NSString *output = [[NSString alloc] initWithBytes:buffer length:len encoding:NSASCIIStringEncoding];
-
-                        if (nil != output)
-                        {
-                            _serverConnectionStatusLabel.text = @"Server Status: Connected";
-                            NSLog(@"server said: %@", output);
-                            [self messageReceived:output];
-                        }
+                        [self dataReceivedHandler:buffer bufferSize:1024 withPacket:packet_fragment];
+//                        NSString *output = [[NSString alloc] initWithBytes:buffer length:len encoding:NSASCIIStringEncoding];
+//
+//                        if (nil != output)
+//                        {
+//                            _serverConnectionStatusLabel.text = @"Server Status: Connected";
+//                            NSLog(@"server said: %@", output);
+//                            [self messageReceived:output];
+//                        }
                     }
                 }
             }
@@ -275,7 +299,7 @@
     _uavConnectionStatusLabel.text = @"UAV Status: Connecting...";
 #if ENABLE_DEBUG_MODE
 //    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"192.168.43.110"];
-//    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"10.0.0.76"];
+    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"10.0.0.76"];
 #else
     [DJISDKManager startConnectionToProduct];
 #endif

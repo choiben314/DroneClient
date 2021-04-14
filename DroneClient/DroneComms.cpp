@@ -471,13 +471,13 @@ namespace DroneInterface {
 
 	bool Packet_EmergencyCommand::Deserialize(Packet const & SourcePacket) {
 		if (! SourcePacket.CheckHashSizeAndPID((uint8_t) 255U))
-			return false;
+            return false;
 		if (SourcePacket.m_data.size() != 9U + 1U)
-			return false;
+            return false;
 		
 		auto iter = SourcePacket.m_data.cbegin() + 7U; //Const iterater to begining of payload
 		Action = decodeField_uint8(iter);
-		return true;
+        return true;
 	}
 	
 	
@@ -613,86 +613,4 @@ namespace DroneInterface {
 		timeout = decodeField_float32(iter);
 		return true;
 	}
-	
-	
-	// ****************************************************************************************************************************************
-	// ***************************************************   Stream Operator Definitions   ****************************************************
-	// ****************************************************************************************************************************************
-//	std::ostream & operator<<(std::ostream & Str, Packet_CoreTelemetry const & v) {
-//		Str << "IsFlying -: " << (unsigned int) v.IsFlying  << "\r\n";
-//		Str << "Latitude -: " << v.Latitude  << " degrees\r\n";
-//		Str << "Longitude : " << v.Longitude << " degrees\r\n";
-//		Str << "Altitude -: " << v.Altitude  << " m\r\n";
-//		Str << "HAG ------: " << v.HAG       << " m\r\n";
-//		Str << "V_N ------: " << v.V_N       << " m/s\r\n";
-//		Str << "V_E ------: " << v.V_E       << " m/s\r\n";
-//		Str << "V_D ------: " << v.V_D       << " m/s\r\n";
-//		Str << "Yaw ------: " << v.Yaw       << " degrees\r\n";
-//		Str << "Pitch ----: " << v.Pitch     << " degrees\r\n";
-//		Str << "Roll -----: " << v.Roll      << " degrees\r\n";
-//		return Str;
-//	}
-	
-//	std::ostream & operator<<(std::ostream & Str, Packet_ExtendedTelemetry const & v) {
-//		Str << "GNSSSatCount : " << (unsigned int) v.GNSSSatCount << "\r\n";
-//		Str << "GNSSSignal --: " << (unsigned int) v.GNSSSignal   << "\r\n";
-//		Str << "MaxHeight ---: " << (unsigned int) v.MaxHeight    << "\r\n";
-//		Str << "MaxDist -----: " << (unsigned int) v.MaxDist      << "\r\n";
-//		Str << "BatLevel ----: " << (unsigned int) v.BatLevel     << "\r\n";
-//		Str << "BatWarning --: " << (unsigned int) v.BatWarning   << "\r\n";
-//		Str << "WindLevel ---: " << (unsigned int) v.WindLevel    << "\r\n";
-//		Str << "DJICam ------: " << (unsigned int) v.DJICam       << "\r\n";
-//		Str << "FlightMode --: " << (unsigned int) v.FlightMode   << "\r\n";
-//		Str << "MissionID ---: " << (unsigned int) v.MissionID    << "\r\n";
-//		Str << "DroneSerial -: " <<                v.DroneSerial  << "\r\n";
-//		return Str;
-//	}
-//
-//	std::ostream & operator<<(std::ostream & Str, Packet_Image const & v) {
-//		Str << "TargetFPS : " << v.TargetFPS << " frame/s\r\n";
-//		Str << "Frame ----: " << v.Frame.rows << " x " << v.Frame.cols << " Image\r\n";
-//		return Str;
-//	}
-//
-//	std::ostream & operator<<(std::ostream & Str, Packet_Acknowledgment const & v) {
-//		Str << "Positive -: " << (unsigned int) v.Positive  << "\r\n";
-//		Str << "SourcePID : " << (unsigned int) v.SourcePID << "\r\n";
-//		return Str;
-//	}
-//
-//	std::ostream & operator<<(std::ostream & Str, Packet_MessageString const & v) {
-//		Str << "Type ---: " << (unsigned int) v.Type    << "\r\n";
-//		Str << "Message : " <<                v.Message << "\r\n";
-//		return Str;
-//	}
-//
-//	std::ostream & operator<<(std::ostream & Str, Packet_EmergencyCommand const & v) {
-//		Str << "Action : " << (unsigned int) v.Action << "\r\n";
-//		return Str;
-//	}
-//
-//	std::ostream & operator<<(std::ostream & Str, Packet_CameraControl const & v) {
-//		Str << "Action ---: " << (unsigned int) v.Action    << "\r\n";
-//		Str << "TargetFPS : " <<                v.TargetFPS << " frame/s\r\n";
-//		return Str;
-//	}
-//
-//	std::ostream & operator<<(std::ostream & Str, Packet_ExecuteWaypointMission const & v) {
-//		Str << "LandAtEnd ---: " << (unsigned int) v.LandAtEnd        << "\r\n";
-//		Str << "CurvedFlight : " << (unsigned int) v.CurvedFlight     << "\r\n";
-//		Str << "Waypoints ---: " << (unsigned int) v.Waypoints.size() << " items\r\n";
-//		for (auto const & waypoint : v.Waypoints)
-//			Str << waypoint << "\r\n";
-//		return Str;
-//	}
-//
-//	std::ostream & operator<<(std::ostream & Str, Packet_VirtualStickCommand const & v) {
-//		Str << "Mode ---: " << (unsigned int) v.Mode    << "\r\n";
-//		Str << "Yaw ----: " <<                v.Yaw     << " degrees\r\n";
-//		Str << "V_x ----: " <<                v.V_x     << " m/s\r\n";
-//		Str << "V_y ----: " <<                v.V_y     << " m/s\r\n";
-//		Str << "HAG ----: " <<                v.HAG     << " m\r\n";
-//		Str << "timeout : " <<                v.timeout << " s\r\n";
-//		return Str;
-//	}
 }

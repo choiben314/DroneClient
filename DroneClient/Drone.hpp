@@ -106,18 +106,6 @@ namespace DroneInterface {
 		}
 	};
 	
-//	inline std::ostream & operator<<(std::ostream & Str, Waypoint const & v) {
-//		double PI = 3.14159265358979;
-//		Str << "Latitude ----: " << 180.0/PI*v.Latitude     << " degrees\r\n";
-//		Str << "Longitude ---: " << 180.0/PI*v.Longitude    << " degrees\r\n";
-//		Str << "Altitude ----: " <<          v.Altitude     << " m\r\n";
-//		Str << "CornerRadius : " <<          v.CornerRadius << " m\r\n";
-//		Str << "Speed -------: " <<          v.Speed        << " m/s\r\n";
-//		Str << "LoiterTime --: " <<          v.LoiterTime   << " s\r\n";
-//		Str << "GimbalPitch -: " << 180.0/PI*v.GimbalPitch  << " degrees\r\n";
-//		return Str;
-//	}
-	
 	//This struct holds a waypoint mission for a single drone. The full DJI waypoint mission interface is relatively complex - we only implement the
 	//subset of it's functionality that we expect to be useful for our purposes. Note that for all these missions, the vehicle Heading Mode should be set to
 	//DJIWaypointMissionHeadingAuto, which orients the aircraft so the front is always pointed in the direction of motion.
