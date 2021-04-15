@@ -11,7 +11,6 @@
 		DA1732DD2623F8E8001FC12C /* ImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = DA1732DC2623F8E8001FC12C /* ImageUtils.m */; };
 		DA1732E62623FE35001FC12C /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA1732E52623FE35001FC12C /* Image.cpp */; };
 		DA1CD04D25E73D9600DF3D45 /* ConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA1CD04825E73D9500DF3D45 /* ConfigViewController.m */; };
-		DA4B102125FED16700C986CD /* CameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4B102025FED16700C986CD /* CameraController.m */; };
 		DA4B102B25FF077500C986CD /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4B102A25FF077500C986CD /* Constants.m */; };
 		DA627B76261515350016323F /* DJIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = DA627B75261515350016323F /* DJIUtils.m */; };
 		DA627B82261545DF0016323F /* DroneComms.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA627B81261545DF0016323F /* DroneComms.cpp */; };
@@ -36,8 +35,6 @@
 		DA1732E82623FE41001FC12C /* Image.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Image.hpp; sourceTree = "<group>"; };
 		DA1CD04825E73D9500DF3D45 /* ConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigViewController.m; sourceTree = "<group>"; };
 		DA1CD04925E73D9500DF3D45 /* ConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigViewController.h; sourceTree = "<group>"; };
-		DA4B102025FED16700C986CD /* CameraController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CameraController.m; sourceTree = "<group>"; };
-		DA4B102325FED19600C986CD /* CameraController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CameraController.h; sourceTree = "<group>"; };
 		DA4B102925FF073400C986CD /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		DA4B102A25FF077500C986CD /* Constants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
 		DA627B75261515350016323F /* DJIUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DJIUtils.m; sourceTree = "<group>"; };
@@ -116,8 +113,6 @@
 				DA7363B825E73C3700057830 /* AppDelegate.m */,
 				DA7363BA25E73C3700057830 /* SceneDelegate.h */,
 				DA7363BB25E73C3700057830 /* SceneDelegate.m */,
-				DA4B102325FED19600C986CD /* CameraController.h */,
-				DA4B102025FED16700C986CD /* CameraController.m */,
 				DA1732DB2623F8D3001FC12C /* ImageUtils.h */,
 				DA1732DC2623F8E8001FC12C /* ImageUtils.m */,
 				DA1732E52623FE35001FC12C /* Image.cpp */,
@@ -269,7 +264,6 @@
 				DA1732E62623FE35001FC12C /* Image.cpp in Sources */,
 				DAEED9F9261D8DB200469295 /* DJIDecodeImageCalibrateControlLogic.m in Sources */,
 				DA627B82261545DF0016323F /* DroneComms.cpp in Sources */,
-				DA4B102125FED16700C986CD /* CameraController.m in Sources */,
 				DA627B76261515350016323F /* DJIUtils.m in Sources */,
 				DA4B102B25FF077500C986CD /* Constants.m in Sources */,
 				DA77B7EB25E7491600F2AC99 /* ConnectionController.mm in Sources */,

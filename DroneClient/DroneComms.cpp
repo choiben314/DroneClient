@@ -68,14 +68,6 @@ static void encodeField_Image (std::vector<uint8_t> & Buffer, const Image * x) {
         encodeField_uint8(Buffer, (uint8_t) x->bitmap[i + 1]);
         encodeField_uint8(Buffer, (uint8_t) x->bitmap[i + 2]);
     }
-//	for (int row = 0; row < x.rows; row++) {
-//		for (int col = 0; col < x.cols; col++) {
-//			cv::Vec3b pixel = x.at<cv::Vec3b>(row, col);
-//			encodeField_uint8(Buffer, (uint8_t) pixel(2)); //Red
-//			encodeField_uint8(Buffer, (uint8_t) pixel(1)); //Green
-//			encodeField_uint8(Buffer, (uint8_t) pixel(0)); //Blue
-//		}
-//	}
 }
 
 
@@ -369,24 +361,7 @@ namespace DroneInterface {
 	// ****************************************************************************************************************************************
 	// ****************************************************   Packet_Image Implementation   ***************************************************
 	// ****************************************************************************************************************************************
-//	bool Packet_Image::operator==(Packet_Image const & Other) const {
-//		if (this->TargetFPS != Other.TargetFPS)
-//			return false;
-//		if ((this->Frame.rows != Other.Frame.rows) || (this->Frame.cols != Other.Frame.cols))
-//			return false;
-//		if (this->Frame.type() != Other.Frame.type())
-//			return false;
-//		for (int row = 0; row < this->Frame.rows; row++) {
-//			for (int col = 0; col < this->Frame.cols; col++) {
-//				cv::Vec3b A = this->Frame.at<cv::Vec3b>(row, col);
-//				cv::Vec3b B = Other.Frame.at<cv::Vec3b>(row, col);
-//				if ((A(0) != B(0)) || (A(1) != B(1)) || (A(2) != B(2)))
-//					return false;
-//			}
-//		}
-//		return true;
-//	}
-//
+
 	void Packet_Image::Serialize(Packet & TargetPacket) const {
 		TargetPacket.Clear();
 		TargetPacket.AddHeader(uint32_t(9U + 4U + 4U + (unsigned int)(Frame->rows * Frame->cols * 3)), uint8_t(2U));
@@ -555,7 +530,6 @@ namespace DroneInterface {
 		Waypoints.clear();
 		unsigned int waypointBytes = (unsigned int) SourcePacket.m_data.size() - 9U - 2U;
 		if (waypointBytes % 40U != 0U) {
-//			std::cerr << "Error in Packet_ExecuteWaypointMission::Deserialize(): Unacceptable payload size.\r\n";
 			return false;
 		}
 		unsigned int numWaypoints = waypointBytes / 40U;

@@ -12,7 +12,7 @@
 
 #define WeakRef(__obj) __weak typeof(self) __obj = self
 #define WeakReturn(__obj) if(__obj ==nil)return;
-#define ENABLE_DEBUG_MODE 1
+#define ENABLE_DEBUG_MODE 0
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -72,9 +72,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UILabel *registrationStatusLabel;
 @property (weak, nonatomic) IBOutlet UILabel *serverConnectionStatusLabel;
 @property (weak, nonatomic) IBOutlet UILabel *uavConnectionStatusLabel;
-@property (weak, nonatomic) IBOutlet UILabel *batteryOneState;
-@property (weak, nonatomic) IBOutlet UILabel *batteryTwoState;
-@property (weak, nonatomic) IBOutlet UILabel *aircraftLocationState;
 @property (weak, nonatomic) IBOutlet UIButton *debugButton;
 
 

@@ -153,7 +153,7 @@
 //    [self sendPacket_ExtendedTelemetry];
 //    [self sendPacket_Image];
 //    [self sendPacket_Acknowledgment:YES withPID:4];
-    [self sendPacket_MessageString: @"Testing the message string..." ofType: 2];
+    [self sendPacket_MessageString:TEST_MESSAGE ofType: 2];
 }
 
 - (void) dataReceivedHandler:(uint8_t *)buffer bufferSize: (uint32_t) size withPacket: (DroneInterface::Packet*) packet_fragment {
@@ -364,12 +364,10 @@
 - (void) configureConnectionToProduct {
     _uavConnectionStatusLabel.text = @"UAV Status: Connecting...";
 #if ENABLE_DEBUG_MODE
-//    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"192.168.43.110"];
-//    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"10.0.0.76"];
+    [DJISDKManager enableBridgeModeWithBridgeAppIP:@"192.168.1.56"];
 #else
     [DJISDKManager startConnectionToProduct];
 #endif
-    [DJISDKManager startConnectionToProduct];
 
     [[DJIVideoPreviewer instance] start];
     self.previewerAdapter = [VideoPreviewerSDKAdapter adapterWithDefaultSettings];
@@ -394,8 +392,8 @@
             
             self->_frame_count = 1;
             
-//            [self sendPacket_MessageString:@"FRAME SENT" ofType:1]; // for checking frame timing
-//            [self sendPacket_Image];
+//            [self sendPacket_MessageString:@"VIDEO FRAME WOULD HAVE SENT NOW" ofType:1]; // for checking frame timing
+            [self sendPacket_Image];
         }
         self->_frame_count++;
     } else {
@@ -522,7 +520,7 @@
 
 #pragma mark - DJIBatteryDelegate
 
-// Use keyed parameters method for battery level because DJIBatteryDelegate unresponsive for some reason.
+// Use keyed parameters method for battery level because DJIBatteryDelegate unresponsive for some reason. See https://github.com/dji-sdk/Mobile-SDK-iOS/blob/master/docs/README-KeyedInterface.md for more info.
 - (void)setExtendedTelemetryKeyedParameters {
     DJIKey * batteryOneKey = [DJIBatteryKey keyWithIndex:0 andParam:DJIBatteryParamChargeRemainingInPercent];
     DJIKey * batteryTwoKey = [DJIBatteryKey keyWithIndex:1 andParam:DJIBatteryParamChargeRemainingInPercent];
@@ -581,7 +579,7 @@
     self->_wind_level = [DJIUtils getWindLevel:[state windWarning]];
     self->_flight_mode = [DJIUtils getFlightMode:[state flightMode]];
 
-// KNOWN BUG: Behavior leading to _dji_cam = 0 is currently undefined.
+//  KNOWN BUG: Behavior leading to _dji_cam = 0 is currently undefined.
 //    if (!self->_camera.isConnected) {
 //        self->_dji_cam = 0;
 //    } else {
@@ -599,10 +597,11 @@
         [self executeVirtualStickCommand_ModeA:command];
     }
     
-//    [self sendPacket_CoreTelemetry];
-//    [NSThread sleepForTimeInterval: 0.1];
-//    [self sendPacket_ExtendedTelemetry];
-//    [NSThread sleepForTimeInterval: 0.1];
+//  KNOWN BUG: Different delay values or slow connections may lead to errors in server-side deserialization
+    [self sendPacket_CoreTelemetry];
+    [NSThread sleepForTimeInterval: 0.5];
+    [self sendPacket_ExtendedTelemetry];
+    [NSThread sleepForTimeInterval: 0.5];
 }
 
 - (void) executeVirtualStickCommand_ModeA: (DroneInterface::VirtualStickCommand_ModeA *) command {
